@@ -1,2 +1,2 @@
-# trabalho de Grafos
+# Trabalho de Grafos
 # Parte 1
