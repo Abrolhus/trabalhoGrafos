@@ -100,7 +100,7 @@ Graph* leituraInstancia(ifstream& input_file, int directed, int weightedEdge, in
     while(input_file >> idNodeSource >> idNodeTarget) {
 
         // graph->insertEdge(idNodeSource, idNodeTarget, 0);
-        cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
+        // cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
         graph->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
 
     }

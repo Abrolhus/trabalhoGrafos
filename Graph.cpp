@@ -121,7 +121,7 @@ void Graph::insertNode(int id)
 void Graph::insertEdge(int id, int target_id, float weight)
 {
     //cria um ponteiro para o node desejado
-    cout << "inserindo " << id << "->" << target_id << endl;
+    //cout << "inserindo " << id << "->" << target_id << endl;
     Node* p = getNode(id); // no 0
 
     // se o node existir, insere a edge com o target desejado
@@ -197,40 +197,69 @@ Node *Graph::getNode(int id)
 
 //Function that prints a set of edges belongs breadth tree
 
-void Graph::breadthFirstSearch(ofstream &output_file){
+// void Graph::breadthFirstSearch(ofstream &output_file){
 
-}
-
-
-
-float Graph::floydMarshall(int idSource, int idTarget){
-
-}
+// }
 
 
 
-float Graph::dijkstra(int idSource, int idTarget){
+// float Graph::floydMarshall(int idSource, int idTarget){
 
-}
+// }
 
-//function that prints a topological sorting
-void topologicalSorting(){
 
-}
 
-void breadthFirstSearch(ofstream& output_file){
+// float Graph::dijkstra(int idSource, int idTarget){
 
-}
-Graph* getVertexInduced(int* listIdNodes){
+// }
 
-}
+// //function that prints a topological sorting
+// void topologicalSorting(){
 
-Graph* agmKuskal(){
+// }
 
-}
-Graph* agmPrim(){
+// void breadthFirstSearch(ofstream& output_file){
 
-}
+// }
+// Graph* getVertexInduced(int* listIdNodes)
+// {
+//     //1) Criar novo grafo
+//     Graph* grafoInduzido = new Graph();
+
+//     //2) Copia grafo antigo para esse grafo
+//     grafoInduzido = this->graph;
+
+//     //3) Para cada nó, remover arestas com targetId fora do listIdNodes
+//     Node* p = this->first_node;
+//     Edge* e = nullptr;
+//     int testId = -1;
+
+//     while (p != nullptr)
+//     {
+//         //testa se o target Id está contido no listIdNodes
+//         testId = -1;
+//         e = p->getFirstEdge();
+//         for (int i = 0; listIdNodes[i] != -1; i++)
+//         {
+//             if (e->getTargetId() == listIdNodes[i])
+                
+//         }
+
+//     }
+
+//     //4) remover nós com Id fora do listIdNodes
+
+//     //5) retorna novo grafo
+
+// }
+
+// Graph* agmKuskal(){
+
+// }
+// Graph* agmPrim(){
+
+// }
+
 void Graph::print(){
     cout << "imprimindo grafo" << endl;
     cout << this->getOrder() << endl;
@@ -239,7 +268,7 @@ void Graph::print(){
         cout << p->getId() +1 << ": ";
         Edge* e = p->getFirstEdge();
         while(e != nullptr){
-            cout << p->getId() + 1<< "->" << e->getTargetId() +1 << ", " ;
+            cout << "->" << e->getTargetId() +1 << " ";
             e = e->getNextEdge();
         }
         cout << endl;
