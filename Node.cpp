@@ -183,6 +183,48 @@ int Node::removeEdge(int id, bool directed, Node* target_node){
 
 }
 
+// void Node::removeAresta(int idAlvo)
+// {
+
+//     //cria ponteiro que aponta para a primeira aresta
+//     Edge* e = this->first_edge;
+
+//     //anda nas arestas até encontrar id alvo
+//     while (e != nullptr)
+//     {
+//         if (e->getTargetId() == idAlvo)
+//             break;
+
+//         e = e->getNextEdge();
+//     }
+
+//     //retorna caso nao exista o aresta desejada
+//     if (e == nullptr)
+//         return;
+//     else if (e == first_edge) //se o node eh o primeiro, apenas faz o proximo ser o primeiro
+//         first_edge = e->getNextEdge();
+//     else
+//     {
+//         //caso seja um node do meio ou o ultimo, cria um ponteiro auxiliar
+//         Edge* aux = first_edge;
+
+//         //encontra o node anterior ao node desejado
+//         while (aux->getNextEdge() != e)
+//             aux = aux->getNextEdge();
+
+//         //se o no desejado for o ultimo, atualiza o ultimo para o anterior
+//         if (e == last_edge)
+//             last_edge = aux;
+
+//         //seta o proximo de anterior para o proximo do desejado
+//         aux->setNextEdge(e->getNextEdge());
+//     }
+
+//     //deleta o node desejado
+//     delete e;
+// }
+
+
 bool Node::searchEdge(int target_id){
      // Verifies whether there are at least one edge in the node
     if(this->first_edge != nullptr){

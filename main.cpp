@@ -139,6 +139,12 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
         //Subgrafo induzido por um conjunto de vértices X;
         case 1:{
 
+            // int listnos[7] = {1, 2, 4, 6, 8, 9, -1};
+
+            // Graph novoGrafo = graph->getVertexInduced(listnos, input_file);
+
+            // novoGrafo.print();
+
             break;
         }
             //Caminho mínimo entre dois vértices usando Dijkstra;
@@ -246,7 +252,7 @@ int main(int argc, char const *argv[]) {
         cout << "Unable to open " << argv[1];
 
 
-    // mainMenu(output_file, graph);
+    //mainMenu(output_file, graph);
     graph->print();
     cout << "teste 123" << endl;
 

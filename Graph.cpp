@@ -221,43 +221,89 @@ Node *Graph::getNode(int id)
 // void breadthFirstSearch(ofstream& output_file){
 
 // }
-// Graph* getVertexInduced(int* listIdNodes)
+
+// Graph* Graph::getVertexInduced(int* listIdNodes, ifstream& input_file)
 // {
-//     //1) Criar novo grafo
-//     Graph* grafoInduzido = new Graph();
+//     int idNodeSource;
+//     int idNodeTarget;
+//     int order;
+//     int numEdges;
 
-//     //2) Copia grafo antigo para esse grafo
-//     grafoInduzido = this->graph;
+//     input_file >> order;
 
-//     //3) Para cada nó, remover arestas com targetId fora do listIdNodes
-//     Node* p = this->first_node;
-//     Edge* e = nullptr;
-//     int testId = -1;
 
-//     while (p != nullptr)
-//     {
-//         //testa se o target Id está contido no listIdNodes
-//         testId = -1;
-//         e = p->getFirstEdge();
-//         for (int i = 0; listIdNodes[i] != -1; i++)
-//         {
-//             if (e->getTargetId() == listIdNodes[i])
-                
-//         }
+//     Graph* grafoInduzido = new Graph(order, 0, 0, 0);
+
+//     while(input_file >> idNodeSource >> idNodeTarget) {
+
+//         grafoInduzido->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
 
 //     }
 
-//     //4) remover nós com Id fora do listIdNodes
+//     Node* p = grafoInduzido->first_node;
+//     Edge* e = nullptr;
 
-//     //5) retorna novo grafo
 
+//     while (p != nullptr)
+//     {
+//         if (!auxGetVertexInduced(p->getId(), listIdNodes, grafoInduzido))
+//         {
+//             grafoInduzido->removeNode(p->getId());
+//         }
+//         p = p->getNextNode();
+//     }
+
+//     p = grafoInduzido->first_node;
+
+
+//     while (p != nullptr)
+//     {
+//         e = p->getFirstEdge();
+//         while (e != nullptr)
+//         {
+//             if (!auxGetVertexInduced(e->getTargetId(), listIdNodes, grafoInduzido))
+//             {
+//                 if (grafoInduzido->getNode(e->getTargetId()) == nullptr)
+//                 {
+//                     p->removeAresta(e->getTargetId());
+//                 }
+//             }
+
+//             e = e->getNextEdge();
+//         }
+        
+//         p = p->getNextNode();
+//     }
+
+//     return grafoInduzido;
 // }
+
 
 // Graph* agmKuskal(){
 
 // }
 // Graph* agmPrim(){
 
+// }
+
+// bool Graph::auxGetVertexInduced (int id, int* listIdNodes, Graph* grafo)
+// {
+//     Node *p = grafo->first_node;
+
+//     while (p != nullptr)
+//     {
+//         for (int i = 0; listIdNodes[i] != -1; i++)
+//         {
+//             if(p->getId() == listIdNodes[i])
+//             {
+//                 return true;
+//             }
+//         }
+
+//         p = p->getNextNode();
+//     }
+
+//     return false;
 // }
 
 void Graph::print(){

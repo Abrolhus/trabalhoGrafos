@@ -46,7 +46,7 @@ class Graph{
         //methods phase1
         void topologicalSorting();
         void breadthFirstSearch(ofstream& output_file);
-        Graph* getVertexInduced(int* listIdNodes);
+        Graph* getVertexInduced(int* listIdNodes, ifstream& input_file);
         Graph* agmKuskal();
         Graph* agmPrim();
         float floydMarshall(int idSource, int idTarget);
@@ -58,6 +58,8 @@ class Graph{
         float greedRandom();
         float greedRactiveRandom();
         void print();
+
+        //bool auxGetVertexInduced (int id, int* listIdNodes, Graph* grafo);
     private:
         //Auxiliar methods
 

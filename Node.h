@@ -49,6 +49,8 @@ class Node{
         Edge* hasEdgeBetween(int target_id);
         // Auxiliar methods
 
+        //void removeAresta(int idAlvo);
+
 };
 
 #endif // NODE_H_INCLUDED
