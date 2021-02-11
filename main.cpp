@@ -134,61 +134,48 @@ int menu(){
 
 void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
-    switch (selecao) {
+    switch (selecao)
+    {
 
         //Subgrafo induzido por um conjunto de vértices X;
         case 1:{
-
-            // int listnos[7] = {1, 2, 4, 6, 8, 9, -1};
-
-            // Graph novoGrafo = graph->getVertexInduced(listnos, input_file);
-
-            // novoGrafo.print();
-
+            
             break;
         }
-            //Caminho mínimo entre dois vértices usando Dijkstra;
+        //Caminho mínimo entre dois vértices usando Dijkstra;
         case 2:{
-
+            
             break;
         }
-
-            //Caminho mínimo entre dois vértices usando Floyd;
+        //Caminho mínimo entre dois vértices usando Floyd;
         case 3:{
-
+            
             break;
         }
-
-            //AGM - Kruscal;
+        //AGM - Kruscal;
         case 4:{
-
-
-
+            
             break;
+        
         }
-
-            //AGM Prim;
+        //AGM Prim;
         case 5:{
-
+            
             break;
         }
-
-            //Busca em largura;
+        //Busca em largura;
         case 6:{
-
+            
             break;
         }
             //Ordenação Topologica;
         case 7:{
-
-
+            
             break;
         }
-        default:
-        {
+        default:{
             cout << " Error!!! invalid option!!" << endl;
         }
-
     }
 }
 
@@ -253,8 +240,17 @@ int main(int argc, char const *argv[]) {
 
 
     //mainMenu(output_file, graph);
+    cout << "Grafo: " << endl;
     graph->print();
-    cout << "teste 123" << endl;
+
+    // --- teste da letra a) ---
+    cout << endl;
+    cout << "Testando letra a)" << endl;
+    cout << "Subgrafo Gerado pelos vértices 1, 2, 4, 6, 8, 9:" << endl;
+    int listnos[7] = {0, 1, 3, 5, 7, 8, -1};
+    Graph* novoGrafo = graph->getVertexInduced(listnos);
+    novoGrafo->print();
+    // ------------------------
 
 
 

@@ -222,63 +222,6 @@ Node *Graph::getNode(int id)
 
 // }
 
-// Graph* Graph::getVertexInduced(int* listIdNodes, ifstream& input_file)
-// {
-//     int idNodeSource;
-//     int idNodeTarget;
-//     int order;
-//     int numEdges;
-
-//     input_file >> order;
-
-
-//     Graph* grafoInduzido = new Graph(order, 0, 0, 0);
-
-//     while(input_file >> idNodeSource >> idNodeTarget) {
-
-//         grafoInduzido->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
-
-//     }
-
-//     Node* p = grafoInduzido->first_node;
-//     Edge* e = nullptr;
-
-
-//     while (p != nullptr)
-//     {
-//         if (!auxGetVertexInduced(p->getId(), listIdNodes, grafoInduzido))
-//         {
-//             grafoInduzido->removeNode(p->getId());
-//         }
-//         p = p->getNextNode();
-//     }
-
-//     p = grafoInduzido->first_node;
-
-
-//     while (p != nullptr)
-//     {
-//         e = p->getFirstEdge();
-//         while (e != nullptr)
-//         {
-//             if (!auxGetVertexInduced(e->getTargetId(), listIdNodes, grafoInduzido))
-//             {
-//                 if (grafoInduzido->getNode(e->getTargetId()) == nullptr)
-//                 {
-//                     p->removeAresta(e->getTargetId());
-//                 }
-//             }
-
-//             e = e->getNextEdge();
-//         }
-        
-//         p = p->getNextNode();
-//     }
-
-//     return grafoInduzido;
-// }
-
-
 // Graph* agmKuskal(){
 
 // }
@@ -286,30 +229,69 @@ Node *Graph::getNode(int id)
 
 // }
 
-// bool Graph::auxGetVertexInduced (int id, int* listIdNodes, Graph* grafo)
-// {
-//     Node *p = grafo->first_node;
+Graph* Graph::getVertexInduced(int* listIdNodes){
 
-//     while (p != nullptr)
-//     {
-//         for (int i = 0; listIdNodes[i] != -1; i++)
-//         {
-//             if(p->getId() == listIdNodes[i])
-//             {
-//                 return true;
-//             }
-//         }
+    //Cria grafo vazio
+    Graph* grafoInduzido = new Graph(0, this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
 
-//         p = p->getNextNode();
-//     }
+    //Cria ponteiro pra vertices para percorrer o grafo
+    Node* p = this->getFirstNode();
 
-//     return false;
-// }
+    //Cria ponteiro pra aresta para percorrer o vertice
+    Edge* e = nullptr;
+
+    //Para cada vertice do grafo
+    while (p != nullptr)
+    {
+        //reseta ponteiro da aresta
+        e = nullptr;
+
+        //confere se o vértice esta contido na lista de vertices
+        if (auxGetVertexInduced(p->getId(), listIdNodes))
+        {
+            //caso esteja adiciona vertice ao novo grafo
+            grafoInduzido->insertNode(p->getId());
+            grafoInduzido->order++;
+
+            //percorre as arestas do vertice
+            e = p->getFirstEdge();
+            while (e != nullptr)
+            {
+                //confere se o vertice para qual a aresta vai esta contido na lista
+                if (auxGetVertexInduced(e->getTargetId(), listIdNodes))
+                {
+                    //caso esteja, adiciona aresta ao vertice
+                    grafoInduzido->getNode(p->getId())->insertEdge(e->getTargetId(), 0);
+                }
+                e = e->getNextEdge();
+            }
+        }
+        p = p->getNextNode();
+    }
+
+    //retorna novo grafo induzido pelos vertices da lista
+    return grafoInduzido;
+}
+
+
+bool Graph::auxGetVertexInduced (int id, int* listIdNodes)
+{
+    //testa se o vertice esta contido na lista de vertices
+    for (int i = 0; listIdNodes[i] != -1; i++)
+        {
+        if(id == listIdNodes[i])
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 void Graph::print(){
     cout << "imprimindo grafo" << endl;
-    cout << this->getOrder() << endl;
-    Node* p = this->first_node;
+    cout << "Ordem: " << getOrder() << endl;
+    Node* p = first_node;
     while(p != nullptr){
         cout << p->getId() +1 << ": ";
         Edge* e = p->getFirstEdge();
