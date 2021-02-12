@@ -11,13 +11,32 @@
 #include <ctime>
 #include <float.h>
 #include <iomanip>
+#include <set>
+#include <queue>
 
 using namespace std;
 
 /**************************************************************************************************
  * Defining the Graph's methods
 **************************************************************************************************/
-
+// Struct used on Dijkstra's method for storing the distance/cost from Node X to node i;
+typedef struct {
+    Node* node;
+    float pathCost;
+    int previousId;
+    bool wasVisited;
+} NodeDist;
+// bool compare (NodeDist n1, NodeDist n2){ return false;}
+class compareCosts {
+  bool reverse;
+public:
+  compareCosts(const bool &revparam = false) { reverse = revparam; }
+  bool operator() (const NodeDist& lhs, const NodeDist& rhs) const
+  {
+    if (reverse) return (lhs.pathCost>rhs.pathCost);
+    else return (lhs.pathCost<rhs.pathCost);
+  }
+};
 // Constructor
 Graph::Graph(int order, bool directed, bool weighted_edge, bool weighted_node)
 {
@@ -209,9 +228,44 @@ Node *Graph::getNode(int id)
 
 
 
-// float Graph::dijkstra(int idSource, int idTarget){
-
-// }
+float Graph::dijkstra(int idSource, int idFinal){
+    map<int, NodeDist> allNodes;
+    priority_queue<NodeDist, vector<NodeDist>, compareCosts> unvisitedNodes;
+    auto sourceNode = this->getNode(idSource);
+    for(Node* p = this->getFirstNode(); p != nullptr; p = p->getNextNode()){
+        if(p == sourceNode){
+            allNodes.insert({p->getId(), {p, INF, -1, false} });
+            continue;
+        }
+        unvisitedNodes.push({p, INF, -1, false});
+        allNodes.insert({p->getId(), {p, INF, -1, false} });
+    }
+    auto currentNode = sourceNode;
+    while(1){
+        cout << "currentNode: " << currentNode->getId() << endl;
+        for(auto edge = currentNode->getFirstEdge(); edge != nullptr; edge = edge->getNextEdge()){
+            int targetId = edge->getTargetId(); // O(1)
+            cout << "id:" << targetId;
+            NodeDist* nodeInfo = &allNodes.at(targetId); // O(1)
+            if(nodeInfo->wasVisited){// if node was no "visited" //  // O(1)
+                continue;
+            }
+            cout << "(pathCost:" << nodeInfo->pathCost << ")";
+            cout << "(" <<  currentNode->getWeight() + nodeInfo->node->getWeight() << ") ";
+            if(nodeInfo->pathCost >= currentNode->getWeight() + nodeInfo->node->getWeight()){
+                nodeInfo->pathCost = currentNode->getWeight() + nodeInfo->node->getWeight();
+                nodeInfo->previousId = currentNode->getId();
+                cout << "[NEWPATHCOST!:" << nodeInfo->pathCost << "]";
+            }
+        }
+        allNodes.at(currentNode->getId()).wasVisited = true;
+        unvisitedNodes.pop();
+        currentNode = unvisitedNodes.top().node;
+        if(currentNode == this->getNode(idFinal))
+            return unvisitedNodes.top().pathCost;
+    }
+    return 0.0f;
+}
 
 // //function that prints a topological sorting
 // void topologicalSorting(){
@@ -271,7 +325,7 @@ Node *Graph::getNode(int id)
 
 //             e = e->getNextEdge();
 //         }
-        
+
 //         p = p->getNextNode();
 //     }
 

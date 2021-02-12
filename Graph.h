@@ -8,6 +8,9 @@
 #include <fstream>
 #include <stack>
 #include <list>
+#include <map>
+
+#define INF 10000.0f
 
 using namespace std;
 

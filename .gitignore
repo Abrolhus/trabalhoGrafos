@@ -1,6 +1,9 @@
 #build files
 build/
 
+# especificos do trabalho
+__MACOSX/
+notasDeAula0601.pdf
 
 # Prerequisites
 *.d

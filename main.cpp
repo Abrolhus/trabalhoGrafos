@@ -90,20 +90,20 @@ Graph* leituraInstancia(ifstream& input_file, int directed, int weightedEdge, in
 
     //Criando objeto grafo
     Graph* graph = new Graph(order, directed, weightedEdge, weightedNode);
-    // graph->insertEdge(1-1,2-1,0);
-    // graph->insertEdge(1-1,5-1,0);
-    // graph->insertEdge(2-1,5-1,0);
-    // graph->insertEdge(4-1,5-1,0);
-    // graph->insertEdge(5-1,3-1,0);
+    graph->insertEdge(0,1,2);
+    graph->insertEdge(0,4,4);
+    graph->insertEdge(1,4,1);
+    graph->insertEdge(3,4,1);
+    graph->insertEdge(4,2,3);
 
     // Leitura de arquivo
-    while(input_file >> idNodeSource >> idNodeTarget) {
-
-        // graph->insertEdge(idNodeSource, idNodeTarget, 0);
-        // cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
-        graph->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
-
-    }
+//    while(input_file >> idNodeSource >> idNodeTarget) {
+//
+//        // graph->insertEdge(idNodeSource, idNodeTarget, 0);
+//        // cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
+//        graph->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
+//
+//    }
 
     return graph;
 }
@@ -148,7 +148,9 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             break;
         }
             //Caminho mínimo entre dois vértices usando Dijkstra;
-        case 2:{
+        case 2:
+        {
+            cout << " dijkstra: " << graph->dijkstra(0, 4);
 
             break;
         }
@@ -197,7 +199,7 @@ int mainMenu(ofstream& output_file, Graph* graph){
     int selecao = 1;
 
     while(selecao != 0){
-        system("clear");
+        // system("clear");
         selecao = menu();
 
         if(output_file.is_open())
@@ -252,9 +254,9 @@ int main(int argc, char const *argv[]) {
         cout << "Unable to open " << argv[1];
 
 
-    //mainMenu(output_file, graph);
-    graph->print();
+    mainMenu(output_file, graph);
     cout << "teste 123" << endl;
+    graph->print();
 
 
 
