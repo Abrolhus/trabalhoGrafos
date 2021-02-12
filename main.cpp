@@ -90,20 +90,20 @@ Graph* leituraInstancia(ifstream& input_file, int directed, int weightedEdge, in
 
     //Criando objeto grafo
     Graph* graph = new Graph(order, directed, weightedEdge, weightedNode);
-    graph->insertEdge(0,1,2);
-    graph->insertEdge(0,4,4);
-    graph->insertEdge(1,4,1);
-    graph->insertEdge(3,4,1);
-    graph->insertEdge(4,2,3);
+    // graph->insertEdge(1-1,2-1,0);
+    // graph->insertEdge(1-1,5-1,0);
+    // graph->insertEdge(2-1,5-1,0);
+    // graph->insertEdge(4-1,5-1,0);
+    // graph->insertEdge(5-1,3-1,0);
 
     // Leitura de arquivo
-//    while(input_file >> idNodeSource >> idNodeTarget) {
-//
-//        // graph->insertEdge(idNodeSource, idNodeTarget, 0);
-//        // cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
-//        graph->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
-//
-//    }
+    while(input_file >> idNodeSource >> idNodeTarget) {
+
+        // graph->insertEdge(idNodeSource, idNodeTarget, 0);
+        // cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
+        graph->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
+
+    }
 
     return graph;
 }
@@ -134,16 +134,11 @@ int menu(){
 
 void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
-    switch (selecao) {
+    switch (selecao)
+    {
 
         //Subgrafo induzido por um conjunto de vértices X;
         case 1:{
-
-            // int listnos[7] = {1, 2, 4, 6, 8, 9, -1};
-
-            // Graph novoGrafo = graph->getVertexInduced(listnos, input_file);
-
-            // novoGrafo.print();
 
             break;
         }
@@ -154,28 +149,23 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             break;
         }
-
-            //Caminho mínimo entre dois vértices usando Floyd;
+        //Caminho mínimo entre dois vértices usando Floyd;
         case 3:{
 
             break;
         }
-
-            //AGM - Kruscal;
+        //AGM - Kruscal;
         case 4:{
 
-
-
             break;
-        }
 
-            //AGM Prim;
+        }
+        //AGM Prim;
         case 5:{
 
             break;
         }
-
-            //Busca em largura;
+        //Busca em largura;
         case 6:{
 
             break;
@@ -183,14 +173,11 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             //Ordenação Topologica;
         case 7:{
 
-
             break;
         }
-        default:
-        {
+        default:{
             cout << " Error!!! invalid option!!" << endl;
         }
-
     }
 }
 
@@ -254,9 +241,24 @@ int main(int argc, char const *argv[]) {
         cout << "Unable to open " << argv[1];
 
 
+<<<<<<< HEAD
     mainMenu(output_file, graph);
     cout << "teste 123" << endl;
     graph->print();
+=======
+    //mainMenu(output_file, graph);
+    cout << "Grafo: " << endl;
+    graph->print();
+
+    // --- teste da letra a) ---
+    cout << endl;
+    cout << "Testando letra a)" << endl;
+    cout << "Subgrafo Gerado pelos vértices 1, 2, 4, 6, 8, 9:" << endl;
+    int listnos[7] = {0, 1, 3, 5, 7, 8, -1};
+    Graph* novoGrafo = graph->getVertexInduced(listnos);
+    novoGrafo->print();
+    // ------------------------
+>>>>>>> 50bdf9ea95eae513b76d5cce32af9857bebddf4c
 
 
 
