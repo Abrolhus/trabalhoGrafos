@@ -41,6 +41,7 @@ class Graph{
         Node* getLastNode();
         //Other methods
         void insertNode(int id);
+        void insertEdgePreguicoso(int id, int target_id, float weight);
         void insertEdge(int id, int target_id, float weight);
         void removeNode(int id);
         bool searchNode(int id);

@@ -31,10 +31,10 @@ class compareCosts {
   bool reverse;
 public:
   compareCosts(const bool &revparam = false) { reverse = revparam; }
-  bool operator() (const NodeDist* lhs, const NodeDist* rhs) const
+  bool operator() (const NodeDist& lhs, const NodeDist& rhs) const
   {
-    if (reverse) return (lhs->pathCost<rhs->pathCost);
-    else return (lhs->pathCost>rhs->pathCost);
+    if (reverse) return (lhs.pathCost>rhs.pathCost);
+    else return (lhs.pathCost<rhs.pathCost);
   }
 };
 // Constructor
@@ -150,19 +150,6 @@ void Graph::insertEdge(int id, int target_id, float weight)
     }
 
 }
-void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
-{
-    //cria um ponteiro para o node desejado
-    //cout << "inserindo " << id << "->" << target_id << endl;
-    Node* p = getNode(id-1); // no 0
-
-    // se o node existir, insere a edge com o target desejado
-    if (p != nullptr)
-    {
-        p->insertEdge(target_id-1, weight);
-    }
-
-}
 
 void Graph::removeNode(int id)
 {
@@ -243,57 +230,39 @@ Node *Graph::getNode(int id)
 
 float Graph::dijkstra(int idSource, int idFinal){
     map<int, NodeDist> allNodes;
-    priority_queue<NodeDist*, vector<NodeDist*>, compareCosts> unvisitedNodes;
-    Node* sourceNode = this->getNode(idSource);
+    priority_queue<NodeDist, vector<NodeDist>, compareCosts> unvisitedNodes;
+    auto sourceNode = this->getNode(idSource);
     for(Node* p = this->getFirstNode(); p != nullptr; p = p->getNextNode()){
         if(p == sourceNode){
-            allNodes.insert({p->getId(), {p, 0, -1, false} });
+            allNodes.insert({p->getId(), {p, INF, -1, false} });
             continue;
         }
+        unvisitedNodes.push({p, INF, -1, false});
         allNodes.insert({p->getId(), {p, INF, -1, false} });
-        // unvisitedNodes.push({p, INF, -1, false});
-        unvisitedNodes.push(&allNodes.at(p->getId()));
     }
-    for(auto& item : allNodes){
-        cout << item.first << ":" << item.second.wasVisited<< ", "<< item.second.pathCost << endl;
-    }
-
-    // auto currentNode = sourceNode;
-    NodeDist* firstNodeInfo = &allNodes.at(sourceNode->getId());
-    NodeDist* currentNodeInfo = &allNodes.at(sourceNode->getId());
+    auto currentNode = sourceNode;
     while(1){
-
-
-
-
-        auto currentNode = currentNodeInfo->node;
-        cout << "currentNode: " << currentNode->getId() +1<< "custoAteEle:" << currentNodeInfo->pathCost<< endl;
+        cout << "currentNode: " << currentNode->getId() << endl;
         for(auto edge = currentNode->getFirstEdge(); edge != nullptr; edge = edge->getNextEdge()){
             int targetId = edge->getTargetId(); // O(1)
-            NodeDist* nodeInfo = &allNodes.at(targetId); // O(1) if(nodeInfo->wasVisited){// if node was no "visited" //  // O(1) continue; }
-            cout << "     id:" << targetId +1 << ", custoAntigo: " << nodeInfo->pathCost;
-            if(nodeInfo->pathCost >= (edge->getWeight() + currentNodeInfo->pathCost)){
-                cout << " _custoDaEdge:" << edge->getWeight();
-                nodeInfo->pathCost = edge->getWeight() + currentNodeInfo->pathCost;
+            cout << "id:" << targetId;
+            NodeDist* nodeInfo = &allNodes.at(targetId); // O(1)
+            if(nodeInfo->wasVisited){// if node was no "visited" //  // O(1)
+                continue;
+            }
+            cout << "(pathCost:" << nodeInfo->pathCost << ")";
+            cout << "(" <<  currentNode->getWeight() + nodeInfo->node->getWeight() << ") ";
+            if(nodeInfo->pathCost >= currentNode->getWeight() + nodeInfo->node->getWeight()){
+                nodeInfo->pathCost = currentNode->getWeight() + nodeInfo->node->getWeight();
                 nodeInfo->previousId = currentNode->getId();
-                cout << " _novoCusto:" << nodeInfo->pathCost << ", "<< endl;
+                cout << "[NEWPATHCOST!:" << nodeInfo->pathCost << "]";
             }
         }
-        cout << endl;
         allNodes.at(currentNode->getId()).wasVisited = true;
         unvisitedNodes.pop();
-        currentNodeInfo = (unvisitedNodes.top());
-        if(currentNode == this->getNode(idFinal)){
-            cout << currentNode->getId() +1<< "<-";
-
-            NodeDist* p = currentNodeInfo;
-            while(p != firstNodeInfo){
-                cout << p->previousId +1 << "<-";
-                p = &allNodes.at(p->previousId);
-            }
-
-            return unvisitedNodes.top()->pathCost;
-        }
+        currentNode = unvisitedNodes.top().node;
+        if(currentNode == this->getNode(idFinal))
+            return unvisitedNodes.top().pathCost;
     }
     return 0.0f;
 }
@@ -309,8 +278,16 @@ float Graph::dijkstra(int idSource, int idFinal){
 
 // Graph* agmKuskal(){
 
+<<<<<<< HEAD
+//             e = e->getNextEdge();
+//         }
+
+//         p = p->getNextNode();
+//     }
+=======
 // }
 // Graph* agmPrim(){
+>>>>>>> 50bdf9ea95eae513b76d5cce32af9857bebddf4c
 
 // }
 

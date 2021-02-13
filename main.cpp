@@ -31,7 +31,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
 
         while(input_file >> idNodeSource >> idNodeTarget) {
 
-            graph->insertEdge(idNodeSource, idNodeTarget, 0);
+            graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, 0);
 
         }
 
@@ -41,7 +41,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
 
         while(input_file >> idNodeSource >> idNodeTarget >> edgeWeight) {
 
-            graph->insertEdge(idNodeSource, idNodeTarget, edgeWeight);
+            graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, edgeWeight);
 
         }
 
@@ -51,7 +51,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
 
         while(input_file >> idNodeSource >> nodeSourceWeight >> idNodeTarget >> nodeTargetWeight) {
 
-            graph->insertEdge(idNodeSource, idNodeTarget, 0);
+            graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, 0);
             graph->getNode(idNodeSource)->setWeight(nodeSourceWeight);
             graph->getNode(idNodeTarget)->setWeight(nodeTargetWeight);
 
@@ -63,7 +63,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
 
         while(input_file >> idNodeSource >> nodeSourceWeight >> idNodeTarget >> nodeTargetWeight) {
 
-            graph->insertEdge(idNodeSource, idNodeTarget, edgeWeight);
+            graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, edgeWeight);
             graph->getNode(idNodeSource)->setWeight(nodeSourceWeight);
             graph->getNode(idNodeTarget)->setWeight(nodeTargetWeight);
 
@@ -90,11 +90,11 @@ Graph* leituraInstancia(ifstream& input_file, int directed, int weightedEdge, in
 
     //Criando objeto grafo
     Graph* graph = new Graph(order, directed, weightedEdge, weightedNode);
-    // graph->insertEdge(1-1,2-1,0);
-    // graph->insertEdge(1-1,5-1,0);
-    // graph->insertEdge(2-1,5-1,0);
-    // graph->insertEdge(4-1,5-1,0);
-    // graph->insertEdge(5-1,3-1,0);
+    graph->insertEdge(0,1,3);
+    graph->insertEdge(0,4,6);
+    graph->insertEdge(1,4,2);
+    graph->insertEdge(3,4,1);
+    graph->insertEdge(4,2,7);
 
     // Leitura de arquivo
     while(input_file >> idNodeSource >> idNodeTarget) {
@@ -102,11 +102,44 @@ Graph* leituraInstancia(ifstream& input_file, int directed, int weightedEdge, in
         // graph->insertEdge(idNodeSource, idNodeTarget, 0);
         // cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
         graph->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
-
+        if(!graph->getDirected())
+            graph->insertEdge(idNodeTarget-1, idNodeSource-1, 0);
     }
 
     return graph;
 }
+Graph* leituraInstancia_PARA_TESTES(ifstream& input_file, int directed, int weightedEdge, int weightedNode){
+    //Variáveis para auxiliar na criação dos nós no Grafo
+    int idNodeSource;
+    int idNodeTarget;
+    int order;
+    int numEdges;
+
+    //Pegando a ordem do grafo
+    // input_file >> order >> numEdges;
+    input_file >> order;
+
+    //Criando objeto grafo
+    Graph* graph = new Graph(order, directed, weightedEdge, weightedNode);
+    graph->insertEdge(0,1,3);
+    graph->insertEdge(0,4,6);
+    graph->insertEdge(1,4,2);
+    graph->insertEdge(3,4,1);
+    graph->insertEdge(4,2,7);
+
+    // Leitura de arquivo
+//    while(input_file >> idNodeSource >> idNodeTarget) {
+//
+//        // graph->insertEdge(idNodeSource, idNodeTarget, 0);
+//        // cout << "arquivo: " << idNodeSource<< "->" << idNodeTarget<< endl;
+//        graph->insertEdge(idNodeSource-1, idNodeTarget-1, 0);
+//        if(!graph->getDirected())
+//            graph->insertEdge(idNodeTarget-1, idNodeSource-1, 0);
+//    }
+
+    return graph;
+}
+
 
 int menu(){
 
@@ -145,7 +178,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             //Caminho mínimo entre dois vértices usando Dijkstra;
         case 2:
         {
-            cout << " dijkstra: " << graph->dijkstra(0, 4);
+            cout << " dijkstra: " << graph->dijkstra(0, 6);
 
             break;
         }
@@ -235,30 +268,27 @@ int main(int argc, char const *argv[]) {
 
     if(input_file.is_open()){
 
-        graph = leituraInstancia(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
 
     }else
         cout << "Unable to open " << argv[1];
 
 
-<<<<<<< HEAD
     mainMenu(output_file, graph);
-    cout << "teste 123" << endl;
-    graph->print();
-=======
-    //mainMenu(output_file, graph);
+    // cout << "teste 123" << endl;
+    // graph->print();
+    // //mainMenu(output_file, graph);
     cout << "Grafo: " << endl;
     graph->print();
 
-    // --- teste da letra a) ---
-    cout << endl;
-    cout << "Testando letra a)" << endl;
-    cout << "Subgrafo Gerado pelos vértices 1, 2, 4, 6, 8, 9:" << endl;
-    int listnos[7] = {0, 1, 3, 5, 7, 8, -1};
-    Graph* novoGrafo = graph->getVertexInduced(listnos);
-    novoGrafo->print();
+    // // --- teste da letra a) ---
+    // cout << endl;
+    // cout << "Testando letra a)" << endl;
+    // cout << "Subgrafo Gerado pelos vértices 1, 2, 4, 6, 8, 9:" << endl;
+    // int listnos[7] = {0, 1, 3, 5, 7, 8, -1};
+    // Graph* novoGrafo = graph->getVertexInduced(listnos);
+    // novoGrafo->print();
     // ------------------------
->>>>>>> 50bdf9ea95eae513b76d5cce32af9857bebddf4c
 
 
 
