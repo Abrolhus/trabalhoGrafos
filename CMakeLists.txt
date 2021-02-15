@@ -6,4 +6,5 @@ add_executable(teste
     Node.cpp
     Graph.cpp
     Edge.cpp
+    ChainedQueue.cpp
     main.cpp)

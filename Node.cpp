@@ -1,5 +1,7 @@
 #include "Node.h"
 #include "Edge.h"
+#include "QNode.h"
+#include "ChainedQueue.h"
 #include <iostream>
 
 using namespace std;

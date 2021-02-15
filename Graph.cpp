@@ -1,6 +1,8 @@
 #include "Graph.h"
 #include "Node.h"
 #include "Edge.h"
+#include "QNode.h"
+#include "ChainedQueue.h"
 #include <iostream>
 #include <fstream>
 #include <stack>
@@ -252,9 +254,44 @@ Node *Graph::getNode(int id)
 
 //Function that prints a set of edges belongs breadth tree
 
-// void Graph::breadthFirstSearch(ofstream &output_file){
+void Graph::breadthFirstSearch(int idFirstNode){
+    int cont = 1;
+    int ordem[this->getOrder()];
+    Node *p = this->getNode(idFirstNode - 1);
+    Edge *e = nullptr;
+    ChainedQueue *fila = new ChainedQueue();
 
-// }
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        ordem[i] = 0;
+    }
+
+    fila->queueUp(p->getId());
+    ordem[p->getId()] = cont++;
+
+    while (!fila->isEmpty())
+    {
+        p = this->getNode(fila->queueDown());
+        e = p->getFirstEdge();
+        while (e != nullptr)
+        {
+            if(ordem[e->getTargetId()] == 0)
+            {
+                ordem[e->getTargetId()] = cont++;
+                fila->queueUp(e->getTargetId());
+            }
+            e = e->getNextEdge();
+        }
+    }
+
+
+    cout << endl;
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        cout << "O vertice " << i + 1 << " foi descoberto em " << ordem[i] << "o" <<endl;
+    }
+
+}
 
 
 
@@ -404,7 +441,7 @@ void Graph::print(){
         cout << p->getId() +1 << ": ";
         Edge* e = p->getFirstEdge();
         while(e != nullptr){
-            cout << "->" << e->getTargetId() +1 << " ";
+            cout << "->" << e->getTargetId()+1 << " ";
             e = e->getNextEdge();
         }
         cout << endl;

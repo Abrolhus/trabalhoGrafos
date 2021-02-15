@@ -49,7 +49,7 @@ class Graph{
 
         //methods phase1
         void topologicalSorting();
-        void breadthFirstSearch(ofstream& output_file);
+        void breadthFirstSearch(int idFirstNode);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* agmKuskal();
         Graph* agmPrim();
