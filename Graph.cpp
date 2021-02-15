@@ -139,29 +139,52 @@ void Graph::insertNode(int id)
 
 void Graph::insertEdge(int id, int target_id, float weight)
 {
-    //cria um ponteiro para o node desejado
-    //cout << "inserindo " << id << "->" << target_id << endl;
-    Node* p = getNode(id); // no 0
+    //cria um ponteiro para o node desejado e o um auxiliar para o node alvo da aresta
+    Node* p = getNode(id);
+    Node* aux = getNode(target_id);
 
-    // se o node existir, insere a edge com o target desejado
-    if (p != nullptr)
-    {
-        p->insertEdge(target_id, weight);
+    //confere se os nodes existem
+    if (p != nullptr && aux != nullptr){
+
+        //confere se a aresta já existe
+        if (!p->searchEdge(target_id)){
+
+            //caso o node exista mas a aresta nao, insere a aresta    
+            p->insertEdge(target_id, weight);
+
+            // se o grafo for nao-direcionado e nao houver aresta de
+            if (this->directed == 0 && !aux->searchEdge(id))
+            {
+                //insere a aresta de volta
+                aux->insertEdge(id, weight);
+            }
+        }
     }
-
 }
+
 void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
 {
-    //cria um ponteiro para o node desejado
-    //cout << "inserindo " << id << "->" << target_id << endl;
-    Node* p = getNode(id-1); // no 0
+    //cria um ponteiro para o node desejado e o um auxiliar para o node alvo da aresta
+    Node* p = getNode(id-1);
+    Node* aux = getNode(target_id-1);
 
-    // se o node existir, insere a edge com o target desejado
-    if (p != nullptr)
-    {
-        p->insertEdge(target_id-1, weight);
+    //confere se os nodes existem
+    if (p != nullptr && aux != nullptr){
+
+        //confere se a aresta já existe
+        if (!p->searchEdge(target_id-1)){
+
+            //caso o node exista mas a aresta nao, insere a aresta    
+            p->insertEdge(target_id-1, weight);
+
+            // se o grafo for nao-direcionado e nao houver aresta de
+            if (this->directed == 0 && !aux->searchEdge(id-1))
+            {
+                //insere a aresta de volta
+                aux->insertEdge(id-1, weight);
+            }
+        }
     }
-
 }
 
 void Graph::removeNode(int id)
