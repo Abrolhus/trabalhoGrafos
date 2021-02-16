@@ -285,10 +285,17 @@ void Graph::breadthFirstSearch(int idFirstNode){
     }
 
 
+    int aux[this->getOrder()];
     cout << endl;
     for (int i = 0; i < this->getOrder(); i++)
     {
-        cout << "O vertice " << i + 1 << " foi descoberto em " << ordem[i] << "o" <<endl;
+        aux[ordem[i] - 1] = i + 1;
+    }
+
+    cout << "Ordem de descoberta: ";
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        cout << aux[i]  << " ";
     }
 
 }

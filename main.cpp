@@ -274,7 +274,7 @@ int main(int argc, char const *argv[]) {
         cout << "Unable to open " << argv[1];
 
 
-    mainMenu(output_file, graph);
+    //mainMenu(output_file, graph);
     // cout << "teste 123" << endl;
     // graph->print();
     // //mainMenu(output_file, graph);
@@ -291,11 +291,11 @@ int main(int argc, char const *argv[]) {
     // ------------------------
 
 
-    // // --- teste da letra f) ---
-    // cout << endl;
-    // cout << "Teste para Busca em Largura (letra f)" << endl;
-    // graph->breadthFirstSearch(1);
-    // cout << endl;
+    // --- teste da letra f) ---
+    cout << endl;
+    cout << "Teste para Busca em Largura (letra f)" << endl;
+    graph->breadthFirstSearch(1);
+    cout << endl;
 
 
     //Fechando arquivo de entrada
