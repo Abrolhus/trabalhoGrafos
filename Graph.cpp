@@ -251,6 +251,114 @@ Node *Graph::getNode(int id)
     return p;
 }
 
+bool Graph::auxIsCyclic(int nodeId, bool isVisited[], int parentId)
+{
+    isVisited[nodeId] = true;
+    Node *p = getNode(nodeId);
+    Edge *e = p->getFirstEdge();
+
+    while (e != nullptr)
+    {
+        if(!isVisited[e->getTargetId()])
+        {
+            if (auxIsCyclic(e->getTargetId(), isVisited, nodeId))
+            {
+                return true;
+            }
+        } 
+        else if (e->getTargetId() != parentId)
+        {
+            return true;
+        }
+
+        e = e->getNextEdge();
+    }
+
+    
+    return false;
+}
+
+bool Graph::isCyclic()
+{
+    bool *isVisited = new bool[this->getOrder()];
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = false;
+    }
+
+    Node *p = first_node;
+    while(p != nullptr)
+    {
+        if(!isVisited[p->getId()])
+        {
+            if(auxIsCyclic(p->getId(), isVisited, -1))
+            {
+                return true;
+            }
+        }
+
+
+        p = p->getNextNode();
+    }
+
+    return false;
+}
+
+bool Graph::auxIsCyclicDirected(int nodeId, bool isVisited[], bool *isContainedRecusirve)
+{
+    Node *p = this->getNode(nodeId);
+    Edge *e = p->getFirstEdge();
+
+    if (!isVisited[nodeId])
+    {
+        isVisited[nodeId] = true;
+        isContainedRecusirve[nodeId] = true;
+
+        while (e != nullptr)
+        {
+            if(!isVisited[e->getTargetId()] && auxIsCyclicDirected(e->getTargetId(), isVisited, isContainedRecusirve))
+            {
+                return true;
+            }
+            else if (isContainedRecusirve[e->getTargetId()])
+            {
+                return true;
+            }
+
+            e = e->getNextEdge();
+        }
+
+    }
+
+    isContainedRecusirve[nodeId] = false;
+    return false;
+}
+
+bool Graph::isCyclicDirected()
+{
+    bool *isVisited = new bool[this->getOrder()];
+    bool *isContainedRecusirve = new bool[this->getOrder()];
+    Node *p = first_node;
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = false;
+        isContainedRecusirve[i] = false;
+    }
+
+    while (p != nullptr)
+    {   
+        if (auxIsCyclicDirected(p->getId(), isVisited, isContainedRecusirve))
+        {
+            return true;
+        }
+
+        p = p->getNextNode();
+    }
+
+    return false;
+}
+
 
 //Function that prints a set of edges belongs breadth tree
 

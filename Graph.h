@@ -64,6 +64,10 @@ class Graph{
         void print();
 
         bool auxGetVertexInduced (int id, int* listIdNodes);
+        bool isCyclic();
+        bool auxIsCyclic(int nodeId, bool isVisited[], int parentId);
+        bool isCyclicDirected();
+        bool auxIsCyclicDirected(int nodeId, bool isVisited[], bool *isContainedRecusirve);
     private:
         //Auxiliar methods
 

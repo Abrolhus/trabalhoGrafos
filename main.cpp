@@ -281,6 +281,8 @@ int main(int argc, char const *argv[]) {
     cout << "Grafo: " << endl;
     graph->print();
 
+    cout << graph->isCyclic() << endl;
+
     // // --- teste da letra a) ---
     // cout << endl;
     // cout << "Testando letra a)" << endl;
@@ -291,11 +293,11 @@ int main(int argc, char const *argv[]) {
     // ------------------------
 
 
-    // --- teste da letra f) ---
-    cout << endl;
-    cout << "Teste para Busca em Largura (letra f)" << endl;
-    graph->breadthFirstSearch(1);
-    cout << endl;
+    // // --- teste da letra f) ---
+    // cout << endl;
+    // cout << "Teste para Busca em Largura (letra f)" << endl;
+    // graph->breadthFirstSearch(1);
+    // cout << endl;
 
 
     //Fechando arquivo de entrada
