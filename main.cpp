@@ -281,7 +281,9 @@ int main(int argc, char const *argv[]) {
     cout << "Grafo: " << endl;
     graph->print();
 
-    cout << graph->isCyclic() << endl;
+    cout << endl << endl;
+
+    graph->kruskal();
 
     // // --- teste da letra a) ---
     // cout << endl;

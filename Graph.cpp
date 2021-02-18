@@ -3,6 +3,7 @@
 #include "Edge.h"
 #include "QNode.h"
 #include "ChainedQueue.h"
+#include "EdgeInfo.h"
 #include <iostream>
 #include <fstream>
 #include <stack>
@@ -15,6 +16,7 @@
 #include <iomanip>
 #include <set>
 #include <queue>
+#include <vector>
 
 using namespace std;
 
@@ -39,6 +41,7 @@ public:
     else return (lhs->pathCost>rhs->pathCost);
   }
 };
+
 // Constructor
 Graph::Graph(int order, bool directed, bool weighted_edge, bool weighted_node)
 {
@@ -153,12 +156,14 @@ void Graph::insertEdge(int id, int target_id, float weight)
 
             //caso o node exista mas a aresta nao, insere a aresta    
             p->insertEdge(target_id, weight);
+            this->number_edges++;
 
             // se o grafo for nao-direcionado e nao houver aresta de
             if (this->directed == 0 && !aux->searchEdge(id))
             {
                 //insere a aresta de volta
                 aux->insertEdge(id, weight);
+                this->number_edges++;
             }
         }
     }
@@ -178,12 +183,14 @@ void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
 
             //caso o node exista mas a aresta nao, insere a aresta    
             p->insertEdge(target_id-1, weight);
+            this->number_edges++;
 
             // se o grafo for nao-direcionado e nao houver aresta de
             if (this->directed == 0 && !aux->searchEdge(id-1))
             {
                 //insere a aresta de volta
                 aux->insertEdge(id-1, weight);
+                this->number_edges++;
             }
         }
     }
@@ -488,6 +495,151 @@ float Graph::dijkstra(int idSource, int idFinal){
 // Graph* agmPrim(){
 
 // }
+
+bool Graph::checkContainsId(int id, int nodeList[], int listLength)
+{
+    for (int i = 0; i < listLength; i++)
+    {
+        if (id == nodeList[i])
+            return true;
+    }
+
+    return false;
+}
+
+int Graph::listSortEdges(int isVisited[], EdgeInfo *graphEdges)
+{
+    Node *p = first_node;
+    Edge *e = p->getFirstEdge();
+    int i = 0;
+    int visNode = 0;
+
+    //adiciona todas as arestas do grafo no TAD EdgeInfo
+    while (p != nullptr)
+    {   
+        //adiciona nós ja visitados para evitar de inserir arestas duas vezes no caso de grafos nao orientados
+        isVisited[visNode] = p->getId();
+        e = p->getFirstEdge();
+
+        while (e != nullptr)
+        {
+            //se orientado, somente adiciona aresta
+            if(this->getDirected())
+            {
+                graphEdges[i].setNodeIdSource(p->getId());
+                graphEdges[i].setNodeIdTarget(e->getTargetId());
+                graphEdges[i].setEdgeWeight(e->getWeight());
+                i++;
+            }
+            //checha se o no ja foi target ja foi visitado para nao inserir a aresta de volta em casos de grafos nao orientaos
+            else if (!checkContainsId(e->getTargetId(), isVisited, this->getOrder()))
+            {
+                graphEdges[i].setNodeIdSource(p->getId());
+                graphEdges[i].setNodeIdTarget(e->getTargetId());
+                graphEdges[i].setEdgeWeight(e->getWeight());
+                i++;
+            }
+
+            e = e->getNextEdge();
+        }
+
+        visNode++;
+        p = p->getNextNode();
+    }
+
+    //guarda a quantidade de elementos adicionados
+    int listSize = i;
+
+    //depois de adicionadas, as organiza de mais barata a mais cara
+    EdgeInfo aux;
+
+    for (int j = 0; j < listSize; j++)
+    {
+        for (int k = j + 1; k < listSize; k++)
+        {
+            if(graphEdges[j].getEdgeWeight() > graphEdges[k].getEdgeWeight())
+            {
+                aux = graphEdges[j];
+                graphEdges[j] = graphEdges[k];
+                graphEdges[k] = aux;
+            }
+        }
+
+    }
+
+    return listSize;
+}
+
+void Graph::kruskal()
+{
+    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges);
+
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+
+    for (int i = 0; i < listSize; i++)
+    {
+        //insere a aresta no grafo auxiliar
+        aux->insertEdge(graphEdges[i].getNodeIdSource(), graphEdges[i].getNodeIdTarget(), graphEdges[i].getEdgeWeight());
+
+        cout << "iteracao " << i << ": eh ciclo: " << aux->isCyclicUtil() << endl;
+        //caso nao forme ciclo, guarde a aresta na solucao
+        if(!aux->isCyclicUtil())
+        {
+            edgeSolution[solutionSize] = graphEdges[i];
+            solutionSize++;
+        }
+        //caso forme um ciclo, retire a aresta recem adicionada
+        else
+        {
+            //ponteiro aponta pra no de saida e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdSource());
+            p->removeEdge(graphEdges[i].getNodeIdTarget(), this->directed, this->getNode(graphEdges[i].getNodeIdTarget()));
+
+            //ponteiro aponta para no de chegada e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdTarget());
+            p->removeEdge(graphEdges[i].getNodeIdSource(), this->directed, this->getNode(graphEdges[i].getNodeIdSource()));
+
+        }
+    }
+
+    cout << endl;
+
+    int totalWeight = 0;
+    //printa as edges;
+    for (int i = 0; i < solutionSize; i++)
+    {
+        cout << "Aresta " << i + 1 << endl;
+        cout << edgeSolution[i].getNodeIdSource() + 1 << "-" << edgeSolution[i].getNodeIdTarget() + 1 << " Peso: " << edgeSolution[i].getEdgeWeight() << endl;
+        cout << "---------------------" << endl;
+        totalWeight += edgeSolution[i].getEdgeWeight();
+    }
+    cout << "Peso total do caminho: " << totalWeight << endl;
+
+    delete [] graphEdges;
+    delete [] edgeSolution;
+}
+
+bool Graph::isCyclicUtil()
+{
+    if (this->directed)
+        return this->isCyclicDirected();
+    else
+        return this->isCyclic();
+}
 
 Graph* Graph::getVertexInduced(int* listIdNodes){
 

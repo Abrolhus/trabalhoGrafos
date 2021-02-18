@@ -4,6 +4,7 @@
 
 #ifndef GRAPH_H_INCLUDED
 #define GRAPH_H_INCLUDED
+#include "EdgeInfo.h"
 #include "Node.h"
 #include <fstream>
 #include <stack>
@@ -50,6 +51,7 @@ class Graph{
         //methods phase1
         void topologicalSorting();
         void breadthFirstSearch(int idFirstNode);
+        void kruskal();
         Graph* getVertexInduced(int* listIdNodes);
         Graph* agmKuskal();
         Graph* agmPrim();
@@ -63,11 +65,14 @@ class Graph{
         float greedRactiveRandom();
         void print();
 
+        int listSortEdges(int isVisited[], EdgeInfo *graphEdges);
+        bool checkContainsId(int id, int nodeList[], int listLength);
         bool auxGetVertexInduced (int id, int* listIdNodes);
         bool isCyclic();
         bool auxIsCyclic(int nodeId, bool isVisited[], int parentId);
         bool isCyclicDirected();
         bool auxIsCyclicDirected(int nodeId, bool isVisited[], bool *isContainedRecusirve);
+        bool isCyclicUtil();
     private:
         //Auxiliar methods
 
