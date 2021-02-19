@@ -154,7 +154,7 @@ void Graph::insertEdge(int id, int target_id, float weight)
         //confere se a aresta já existe
         if (!p->searchEdge(target_id)){
 
-            //caso o node exista mas a aresta nao, insere a aresta    
+            //caso o node exista mas a aresta nao, insere a aresta
             p->insertEdge(target_id, weight);
             this->number_edges++;
 
@@ -181,7 +181,7 @@ void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
         //confere se a aresta já existe
         if (!p->searchEdge(target_id-1)){
 
-            //caso o node exista mas a aresta nao, insere a aresta    
+            //caso o node exista mas a aresta nao, insere a aresta
             p->insertEdge(target_id-1, weight);
             this->number_edges++;
 
@@ -272,7 +272,7 @@ bool Graph::auxIsCyclic(int nodeId, bool isVisited[], int parentId)
             {
                 return true;
             }
-        } 
+        }
         else if (e->getTargetId() != parentId)
         {
             return true;
@@ -281,7 +281,7 @@ bool Graph::auxIsCyclic(int nodeId, bool isVisited[], int parentId)
         e = e->getNextEdge();
     }
 
-    
+
     return false;
 }
 
@@ -354,7 +354,7 @@ bool Graph::isCyclicDirected()
     }
 
     while (p != nullptr)
-    {   
+    {
         if (auxIsCyclicDirected(p->getId(), isVisited, isContainedRecusirve))
         {
             return true;
@@ -417,9 +417,38 @@ void Graph::breadthFirstSearch(int idFirstNode){
 
 
 
-// float Graph::floydMarshall(int idSource, int idTarget){
+float Graph::floydMarshall(int idSource, int idTarget){
+    vector<vector<float>> edgeMatrix(this->getOrder(), vector<float>(this->getOrder(), INF)); // matriz com os pesos das edges de todo noh (i) para cada outro noh (j)
+    for(int i = 0; i < this->getOrder(); i++){
+        for(int j = 0; j < this->getOrder(); j++){
+            cout << edgeMatrix[i][j] << ", ";
+        }
+        cout << endl;
+    }
+    for(auto node = this->getFirstNode(); node != nullptr; node = node->getNextNode()){ // O(n^2)
+        edgeMatrix[node->getId()][node->getId()] = 0;
+        for(auto edge = node->getFirstEdge(); edge != nullptr; edge = edge->getNextEdge()){
+            edgeMatrix[node->getId()][edge->getTargetId()] = edge->getWeight();
+        }
 
-// }
+    }
+    for(int k = 0; k < this->getOrder(); k++){
+        //percorrer matriz:
+        for(int i = 0; i < this->getOrder(); i++){
+            for(int j = 0; j < this->getOrder(); j++){
+                edgeMatrix[i][j] = min(edgeMatrix[i][j], edgeMatrix[i][k] + edgeMatrix[k][j]);
+            }
+        }
+    }
+    cout << "Matriz final do Floyd" << endl;
+    for(int i = 0; i < this->getOrder(); i++){
+        for(int j = 0; j < this->getOrder(); j++){
+            cout << edgeMatrix[i][j] << ", ";
+        }
+        cout << endl;
+    }
+    return edgeMatrix[idSource][idTarget];
+}
 
 
 
@@ -516,7 +545,7 @@ int Graph::listSortEdges(int isVisited[], EdgeInfo *graphEdges)
 
     //adiciona todas as arestas do grafo no TAD EdgeInfo
     while (p != nullptr)
-    {   
+    {
         //adiciona nós ja visitados para evitar de inserir arestas duas vezes no caso de grafos nao orientados
         isVisited[visNode] = p->getId();
         e = p->getFirstEdge();
