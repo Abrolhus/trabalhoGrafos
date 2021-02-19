@@ -283,7 +283,8 @@ int main(int argc, char const *argv[]) {
 
     cout << endl << endl;
 
-    graph->kruskal();
+    graph->prim();
+    //graph->kruskal();
 
     // // --- teste da letra a) ---
     // cout << endl;

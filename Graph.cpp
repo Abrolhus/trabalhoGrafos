@@ -17,6 +17,7 @@
 #include <set>
 #include <queue>
 #include <vector>
+#define INFINITO 999;
 
 using namespace std;
 
@@ -478,6 +479,74 @@ float Graph::dijkstra(int idSource, int idFinal){
         }
     }
     return 0.0f;
+}
+
+int Graph::cheapestNeighbor(int neighborPath[], int visitedNodes[])
+{   
+    int min = INFINITO;
+    int cheapestNeighborId;
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        if (!checkContainsId(i, visitedNodes, this->getOrder()) && neighborPath[i] < min)
+        {
+            min = neighborPath[i];
+            cheapestNeighborId = i;
+        }
+    }
+
+    return cheapestNeighborId;
+}
+
+void Graph::updateNeighborPath(int id, int neighborPath[])
+{
+    Node *p = this->getNode(id);
+    Edge *e = p->getFirstEdge();
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        e = p->getFirstEdge();
+        while (e != nullptr)
+        {
+            if (e->getTargetId() == i && neighborPath[i] > e->getWeight())
+            {
+                neighborPath[i] = e->getWeight();
+            }
+            e = e->getNextEdge();
+        }
+    }
+}
+
+void Graph::prim(){
+    int visitedNodes[this->getOrder()];
+    int neighborPath[this->getOrder()];
+    int nextNodeId = 0;
+    int index = 0;
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        visitedNodes[i] = -1;
+        neighborPath[i] = INFINITO;
+    }
+
+    neighborPath[0] = 0;
+
+
+
+    while (visitedNodes[this->getOrder() - 1] == -1)
+    {
+        nextNodeId = cheapestNeighbor(neighborPath, visitedNodes);
+        updateNeighborPath(nextNodeId, neighborPath);
+        visitedNodes[index] = nextNodeId;
+        index++;
+    }
+
+    cout << endl << "Caminho percorrido: ";
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        cout << visitedNodes[i] + 1 << " ";
+    }
+    cout << endl;
 }
 
 // //function that prints a topological sorting

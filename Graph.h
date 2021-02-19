@@ -55,6 +55,7 @@ class Graph{
         Graph* getVertexInduced(int* listIdNodes);
         Graph* agmKuskal();
         Graph* agmPrim();
+        void prim();
         float floydMarshall(int idSource, int idTarget);
         float dijkstra(int idSource, int idTarget);
 
@@ -65,6 +66,8 @@ class Graph{
         float greedRactiveRandom();
         void print();
 
+        int cheapestNeighbor(int neighborPath[], int visitedNodes[]);
+        void updateNeighborPath(int id, int neighborPath[]);
         int listSortEdges(int isVisited[], EdgeInfo *graphEdges);
         bool checkContainsId(int id, int nodeList[], int listLength);
         bool auxGetVertexInduced (int id, int* listIdNodes);
