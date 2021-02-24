@@ -49,7 +49,7 @@ class Node{
         Edge* hasEdgeBetween(int target_id);
         // Auxiliar methods
 
-        void removeAresta(int idAlvo);
+        void removeAresta(int idAlvo, bool direcionado);
 
 };
 

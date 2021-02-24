@@ -185,6 +185,8 @@ void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
             //caso o node exista mas a aresta nao, insere a aresta
             p->insertEdge(target_id-1, weight);
             this->number_edges++;
+            p->incrementOutDegree();
+            aux->incrementInDegree();
 
             // se o grafo for nao-direcionado e nao houver aresta de
             if (this->directed == 0 && !aux->searchEdge(id-1))
@@ -196,6 +198,18 @@ void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
         }
     }
 }
+
+void Graph::removeEdge(int node_id, int target_id)
+{
+    Node *p = this->getNode(node_id);
+    //Node *target = this->getNode(target_id);
+    //target->decrementInDegree();
+    //p->decrementOutDegree();
+
+    p->removeAresta(target_id, this->getDirected());
+
+}
+
 
 void Graph::removeNode(int id)
 {
@@ -600,21 +614,124 @@ Graph* Graph::prim(){
     return grafoSolucao;
 }
 
-// //function that prints a topological sorting
-// void topologicalSorting(){
 
-// }
+void Graph::topologicalSorting(){
 
-// void breadthFirstSearch(ofstream& output_file){
+    // if (!this->getDirected() && this->isCyclicUtil())
+    // {
+    //     cout << endl << "Ordenacao Topologica impossivel: grafo nao-direcionado ou ciclico" << endl;
+    //     return;
+    // }
 
-// }
+    // ChainedQueue *DAGQueue = new ChainedQueue();
 
-// Graph* agmKuskal(){
+    // Node *p = this->getFirstNode();
+    // while (p != nullptr)
+    // {
+    //     if (p->getInDegree() == 0)
+    //     {
+    //         cout << p->getId() + 1 << " ";
+    //         DAGQueue->queueUp(p->getId());
+    //     }
+    //     p = p->getNextNode();
+    // }
 
-// }
-// Graph* agmPrim(){
+    // cout << "ta vazia? " << DAGQueue->isEmpty() << endl;
 
-// }
+    // int cont = 0;
+    // int DAG[this->getOrder()];
+    // Edge *e = nullptr;
+
+    // while (!DAGQueue->isEmpty())
+    // {
+    //     p = this->getNode(DAGQueue->queueDown());
+    //     DAG[cont] = p->getId();
+
+    //     cout << "iteracao " << cont << " no " << p->getId() << endl;
+    //     cont++;
+
+    //     e = p->getFirstEdge();
+    //     while (e != nullptr)
+    //     {
+    //         p->removeEdge(e->getTargetId(), this->getDirected(), this->getNode(e->getTargetId()));
+
+    //         if (this->getNode(e->getTargetId())->getInDegree() == 0)
+    //         {
+    //             DAGQueue->queueUp(e->getTargetId()); 
+    //         }
+    //         e = e->getNextEdge();
+    //     }
+    // }
+
+    // cout << endl << "Ordenacao Topologica do grafo direcionado acliclo: ";
+    // for (int i = 0; i < this->getOrder(); i++)
+    // {
+    //     cout << DAG[i] + 1 << " ";
+
+    // }
+    // cout << endl;
+
+    Node *p = this->getFirstNode();
+    Edge *e = p->getFirstEdge();
+
+
+    while (e != nullptr)
+    {
+        cout << p->getId() + 1 << " -> " << e->getTargetId() + 1 << endl;
+        e = e->getNextEdge();
+    }
+    cout << endl << endl;
+
+    this->removeEdge(0, 1);
+
+    e = p->getFirstEdge();
+    while (e != nullptr)
+    {
+        cout << p->getId() + 1 << " -> " << e->getTargetId() + 1 << endl;
+        e = e->getNextEdge();
+    }
+
+    // while (e != nullptr)
+    // {
+    //     cout << e->getTargetId() + 1 << endl;
+    //     // cout << "iteracao " << cont << endl;
+    //     // this->removeEdge(p->getId(), e->getTargetId());
+    //     // cont++;
+    //     e = e->getNextEdge();
+    //     if (e == nullptr)
+    //     {
+    //         cout << "chegou ao fim" << endl;
+    //     }
+    //     else
+    //     {
+    //         cout << "nem chegou fim" << endl;
+    //     }
+    // }
+
+    // while (p != nullptr)
+    // {
+    //     cout << endl << "No atual (antes da iteracao): " << p->getId() + 1 << " In: " << p->getInDegree() << " Out: " << p->getOutDegree() << endl;
+
+    //     e = p->getFirstEdge();
+    //     while (e != nullptr)
+    //     {
+    //         cout << "Removendo aresta para " << e->getTargetId() + 1 << " In: " << this->getNode(e->getTargetId())->getInDegree() << endl;
+    //         //p->removeEdge(e->getTargetId(), this->getDirected(), this->getNode(e->getTargetId()));
+    //         this->removeEdge(p->getId(), e->getTargetId());
+    //         cout << "Depois de remover a aresta para " << e->getTargetId() + 1 << " In: " << this->getNode(e->getTargetId())->getInDegree() << endl;
+
+    //         e = e->getNextEdge();
+    //     }
+
+    //     cout << endl << "No atual (antes da iteracao): " << p->getId() + 1 << " In: " << p->getInDegree() << " Out: " << p->getOutDegree() << endl;
+    //     cout << "---------------------------" << endl;
+    //     p = p->getNextNode();
+    // }
+
+    //cout << "Grafo sem arestas: " << endl;
+    //this->print();
+
+}
 
 bool Graph::checkContainsId(int id, int nodeList[], int listLength)
 {
@@ -820,6 +937,7 @@ void Graph::print(){
             cout << "->" << e->getTargetId()+1 << " ";
             e = e->getNextEdge();
         }
+        cout << "  Grau Entrada: " << p->getInDegree() << " Grau Saida: " << p->getOutDegree(); 
         cout << endl;
         p = p->getNextNode();
     }

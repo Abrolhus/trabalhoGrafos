@@ -185,44 +185,105 @@ int Node::removeEdge(int id, bool directed, Node* target_node){
 
 }
 
-void Node::removeAresta(int idAlvo)
+void Node::removeAresta(int idAlvo, bool direcionado)
 {
 
-    //cria ponteiro que aponta para a primeira aresta
-    Edge* e = this->first_edge;
+    // //cria ponteiro que aponta para a primeira aresta
+    // Edge* e = this->getFirstEdge();
 
-    //anda nas arestas até encontrar id alvo
-    while (e != nullptr)
+    // //anda nas arestas até encontrar id alvo
+    // while (e != nullptr)
+    // {
+    //     if (e->getTargetId() == idAlvo)
+    //         break;
+
+    //     e = e->getNextEdge();
+    // }
+
+    // //retorna caso nao exista o aresta desejada
+    // if (e == nullptr)
+    // {
+    //     return;
+    // }
+    // else if (e == this->getFirstEdge()) //se a edge eh a primeiro, apenas faz o proximo ser o primeiro
+    // {
+    //     first_edge = e->getNextEdge();
+    // }
+    // else
+    // {
+    //     //caso seja um node do meio ou o ultimo, cria um ponteiro auxiliar
+    //     Edge* aux = this->getFirstEdge();
+
+    //     //encontra o node anterior ao node desejado
+    //     while (aux->getNextEdge() != e)
+    //         aux = aux->getNextEdge();
+
+    //     //se o no desejado for o ultimo, atualiza o ultimo para o anterior
+    //     if (e == this->getLastEdge())
+    //         last_edge = aux;
+
+    //     //seta o proximo de anterior para o proximo do desejado
+    //     aux->setNextEdge(e->getNextEdge());
+    // }
+
+
+    // //deleta a aresta desejada
+    // delete e;
+
+    Edge *e = nullptr;
+
+    if (this->getFirstEdge() == 0) // nao há arestas
     {
-        if (e->getTargetId() == idAlvo)
-            break;
-
-        e = e->getNextEdge();
-    }
-
-    //retorna caso nao exista o aresta desejada
-    if (e == nullptr)
+        cout << endl << "Entrou aqui (nao ha arestas)" << endl;
         return;
-    else if (e == first_edge) //se o node eh o primeiro, apenas faz o proximo ser o primeiro
-        first_edge = e->getNextEdge();
+    }
+    else if(this->getFirstEdge()->getTargetId() == idAlvo) // aresta alvo é a primeira
+    {
+        cout << endl << "Entrou aqui (aresta alvo e a primeira)" << endl;
+        e = this->getFirstEdge();
+        cout << "primeira aresta é de " << this->getId() + 1 << " para " << e->getTargetId() + 1<< endl;
+        this->first_edge = e->getNextEdge();
+        cout << "primeira aresta é, agora, de " << this->getId() + 1 << " para " << e->getNextEdge()->getTargetId() + 1 << endl;
+    }
+    else if(this->getLastEdge()->getTargetId() == idAlvo)
+    {
+        cout << endl << "Entrou aqui (aresta alvo e a ultima)" << endl;
+        Edge *aux = this->getFirstEdge();
+
+        while (aux->getNextEdge() != this->getLastEdge())
+        {
+            aux = aux->getNextEdge();
+        }
+
+        aux->setNextEdge(nullptr);
+        last_edge = aux;
+    }
     else
     {
-        //caso seja um node do meio ou o ultimo, cria um ponteiro auxiliar
-        Edge* aux = first_edge;
+        cout << endl << "Entrou aqui (aresta alvo ta no meio)" << endl;
+        e = this->getFirstEdge();
 
-        //encontra o node anterior ao node desejado
+        while (e != nullptr)
+        {
+            if (e->getTargetId() == idAlvo)
+            {
+                break;
+            }
+            e = e->getNextEdge();
+        }
+
+        Edge *aux = this->getFirstEdge();
+
         while (aux->getNextEdge() != e)
+        {
             aux = aux->getNextEdge();
+        }
 
-        //se o no desejado for o ultimo, atualiza o ultimo para o anterior
-        if (e == last_edge)
-            last_edge = aux;
-
-        //seta o proximo de anterior para o proximo do desejado
         aux->setNextEdge(e->getNextEdge());
+
     }
 
-    //deleta o node desejado
+    cout << "deletando aresta..." << endl;
     delete e;
 }
 
