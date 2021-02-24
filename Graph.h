@@ -51,11 +51,9 @@ class Graph{
         //methods phase1
         void topologicalSorting();
         void breadthFirstSearch(int idFirstNode);
-        void kruskal();
+        Graph* kruskal();
         Graph* getVertexInduced(int* listIdNodes);
-        Graph* agmKuskal();
-        Graph* agmPrim();
-        void prim();
+        Graph* prim();
         float floydMarshall(int idSource, int idTarget);
         float dijkstra(int idSource, int idTarget);
 

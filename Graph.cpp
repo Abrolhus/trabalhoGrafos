@@ -370,6 +370,7 @@ bool Graph::isCyclicDirected()
 
 //Function that prints a set of edges belongs breadth tree
 
+
 void Graph::breadthFirstSearch(int idFirstNode){
     int cont = 1;
     int ordem[this->getOrder()];
@@ -546,11 +547,17 @@ void Graph::updateNeighborPath(int id, int neighborPath[])
     }
 }
 
-void Graph::prim(){
+Graph* Graph::prim(){
     int visitedNodes[this->getOrder()];
     int neighborPath[this->getOrder()];
     int nextNodeId = 0;
     int index = 0;
+    int idAlvo;
+    int minimum = INFINITO;
+    int totalMiniumWeight = 0;
+    Node *p = nullptr;
+    Edge *e = nullptr;
+    Graph *grafoSolucao = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
 
     for (int i = 0; i < this->getOrder(); i++)
     {
@@ -561,21 +568,36 @@ void Graph::prim(){
     neighborPath[0] = 0;
 
 
-
     while (visitedNodes[this->getOrder() - 1] == -1)
     {
         nextNodeId = cheapestNeighbor(neighborPath, visitedNodes);
         updateNeighborPath(nextNodeId, neighborPath);
+        minimum = INFINITO;
+
+        if (nextNodeId != 0)
+        {
+            p = this->getNode(nextNodeId);
+            e = p->getFirstEdge();
+            while (e != nullptr)
+            {
+                if (checkContainsId(e->getTargetId(), visitedNodes, this->getOrder()) && e->getWeight() < minimum)
+                {
+                    minimum = e->getWeight();
+                    idAlvo = e->getTargetId(); 
+                }
+                e = e->getNextEdge();
+            }
+
+            grafoSolucao->insertEdge(p->getId(), idAlvo, minimum);
+            totalMiniumWeight += minimum;
+        }
+
         visitedNodes[index] = nextNodeId;
         index++;
     }
 
-    cout << endl << "Caminho percorrido: ";
-    for (int i = 0; i < this->getOrder(); i++)
-    {
-        cout << visitedNodes[i] + 1 << " ";
-    }
-    cout << endl;
+
+    return grafoSolucao;
 }
 
 // //function that prints a topological sorting
@@ -668,7 +690,7 @@ int Graph::listSortEdges(int isVisited[], EdgeInfo *graphEdges)
     return listSize;
 }
 
-void Graph::kruskal()
+Graph* Graph::kruskal()
 {
     EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
     int isVisited[this->getOrder()];
@@ -693,7 +715,6 @@ void Graph::kruskal()
         //insere a aresta no grafo auxiliar
         aux->insertEdge(graphEdges[i].getNodeIdSource(), graphEdges[i].getNodeIdTarget(), graphEdges[i].getEdgeWeight());
 
-        cout << "iteracao " << i << ": eh ciclo: " << aux->isCyclicUtil() << endl;
         //caso nao forme ciclo, guarde a aresta na solucao
         if(!aux->isCyclicUtil())
         {
@@ -716,19 +737,9 @@ void Graph::kruskal()
 
     cout << endl;
 
-    int totalWeight = 0;
-    //printa as edges;
-    for (int i = 0; i < solutionSize; i++)
-    {
-        cout << "Aresta " << i + 1 << endl;
-        cout << edgeSolution[i].getNodeIdSource() + 1 << "-" << edgeSolution[i].getNodeIdTarget() + 1 << " Peso: " << edgeSolution[i].getEdgeWeight() << endl;
-        cout << "---------------------" << endl;
-        totalWeight += edgeSolution[i].getEdgeWeight();
-    }
-    cout << "Peso total do caminho: " << totalWeight << endl;
-
     delete [] graphEdges;
     delete [] edgeSolution;
+    return aux;
 }
 
 bool Graph::isCyclicUtil()

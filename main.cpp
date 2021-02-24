@@ -145,6 +145,7 @@ int menu(){
 
     int selecao;
 
+    cout << endl << endl;
     cout << "MENU" << endl;
     cout << "----" << endl;
     cout << "[1] Subgrafo induzido por conjunto de vértices" << endl;
@@ -167,11 +168,45 @@ int menu(){
 
 void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
+    // MOSTRANDO O GRAFO AQUI
+    cout << endl << "Grafo vigente: " << endl;
+    graph->print();
+    cout << endl;
+
     switch (selecao)
     {
 
         //Subgrafo induzido por um conjunto de vértices X;
         case 1:{
+
+            int tamNosLista;
+
+            cout << "Quantos nos deseja?" << endl;
+            cin >> tamNosLista;
+            tamNosLista++;
+
+            cout << endl << "Quais nos devem induzir o grafo?" << endl;
+            int nosLista[tamNosLista];
+            int proxNo;
+            
+            for (int i = 0; i < tamNosLista - 1; i++)
+            {
+                cin >> proxNo;
+                nosLista[i] = proxNo - 1;
+            }
+
+            nosLista[tamNosLista - 1] = -1;
+
+            cout << endl << endl;
+            cout << "Nos escolhidos: ";
+            for (int i = 0; i < tamNosLista - 1; i++)
+            {
+                cout << nosLista[i] + 1 << " ";
+            }
+
+            cout << endl;
+            Graph* novoGrafo = graph->getVertexInduced(nosLista);
+            novoGrafo->print();
 
             break;
         }
@@ -184,23 +219,38 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
         }
         //Caminho mínimo entre dois vértices usando Floyd;
         case 3:{
+
             cout << "floydMarshall: " <<  graph->floydMarshall(0, 6) << endl;
 
             break;
         }
         //AGM - Kruscal;
-        case 4:{
+        case 5:{
+
+            Graph* kruskal = graph->kruskal();
+            cout << endl << "Arvore Geradora Minima usando Kruskal: " << endl;
+            kruskal->print();
 
             break;
 
         }
         //AGM Prim;
-        case 5:{
+        case 4:{
+
+            Graph* prim = graph->prim();
+            cout << endl << "Arvore Geradora Minima usando Prim: " << endl;
+            prim->print();
 
             break;
         }
         //Busca em largura;
         case 6:{
+
+            int primeiroNo;
+            cout << endl << "A partir de qual no deseja fazer a busca em largura? " << endl;
+            cin >> primeiroNo;
+            graph->breadthFirstSearch(primeiroNo);
+            cout << endl;
 
             break;
         }
@@ -279,12 +329,14 @@ int main(int argc, char const *argv[]) {
     // cout << "teste 123" << endl;
     // graph->print();
     // //mainMenu(output_file, graph);
-    cout << "Grafo: " << endl;
-    graph->print();
 
-    cout << endl << endl;
 
-    graph->prim();
+    //cout << "Grafo: " << endl;
+    //graph->print();
+
+    //cout << endl << endl;
+
+    //graph->prim();
     //graph->kruskal();
 
     // // --- teste da letra a) ---
