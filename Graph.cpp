@@ -617,79 +617,80 @@ Graph* Graph::prim(){
 
 void Graph::topologicalSorting(){
 
-    // if (!this->getDirected() && this->isCyclicUtil())
-    // {
-    //     cout << endl << "Ordenacao Topologica impossivel: grafo nao-direcionado ou ciclico" << endl;
-    //     return;
-    // }
+    if (!this->getDirected() && this->isCyclicUtil())
+    {
+        cout << endl << "Ordenacao Topologica impossivel: grafo nao-direcionado ou ciclico" << endl;
+        return;
+    }
 
-    // ChainedQueue *DAGQueue = new ChainedQueue();
-
-    // Node *p = this->getFirstNode();
-    // while (p != nullptr)
-    // {
-    //     if (p->getInDegree() == 0)
-    //     {
-    //         cout << p->getId() + 1 << " ";
-    //         DAGQueue->queueUp(p->getId());
-    //     }
-    //     p = p->getNextNode();
-    // }
-
-    // cout << "ta vazia? " << DAGQueue->isEmpty() << endl;
-
-    // int cont = 0;
-    // int DAG[this->getOrder()];
-    // Edge *e = nullptr;
-
-    // while (!DAGQueue->isEmpty())
-    // {
-    //     p = this->getNode(DAGQueue->queueDown());
-    //     DAG[cont] = p->getId();
-
-    //     cout << "iteracao " << cont << " no " << p->getId() << endl;
-    //     cont++;
-
-    //     e = p->getFirstEdge();
-    //     while (e != nullptr)
-    //     {
-    //         p->removeEdge(e->getTargetId(), this->getDirected(), this->getNode(e->getTargetId()));
-
-    //         if (this->getNode(e->getTargetId())->getInDegree() == 0)
-    //         {
-    //             DAGQueue->queueUp(e->getTargetId()); 
-    //         }
-    //         e = e->getNextEdge();
-    //     }
-    // }
-
-    // cout << endl << "Ordenacao Topologica do grafo direcionado acliclo: ";
-    // for (int i = 0; i < this->getOrder(); i++)
-    // {
-    //     cout << DAG[i] + 1 << " ";
-
-    // }
-    // cout << endl;
+    ChainedQueue *DAGQueue = new ChainedQueue();
 
     Node *p = this->getFirstNode();
-    Edge *e = p->getFirstEdge();
-
-
-    while (e != nullptr)
+    while (p != nullptr)
     {
-        cout << p->getId() + 1 << " -> " << e->getTargetId() + 1 << endl;
-        e = e->getNextEdge();
+        if (p->getInDegree() == 0)
+        {
+            cout << p->getId() + 1 << " ";
+            DAGQueue->queueUp(p->getId());
+        }
+        p = p->getNextNode();
     }
-    cout << endl << endl;
 
-    this->removeEdge(0, 1);
+    cout << "ta vazia? " << DAGQueue->isEmpty() << endl;
 
-    e = p->getFirstEdge();
-    while (e != nullptr)
+    int cont = 0;
+    int DAG[this->getOrder()];
+    Edge *e = nullptr;
+
+    while (!DAGQueue->isEmpty())
     {
-        cout << p->getId() + 1 << " -> " << e->getTargetId() + 1 << endl;
-        e = e->getNextEdge();
+        p = this->getNode(DAGQueue->queueDown());
+        DAG[cont] = p->getId();
+
+        cout << "iteracao " << cont << " no " << p->getId() << endl;
+        cont++;
+
+        e = p->getFirstEdge();
+        while (e != nullptr)
+        {
+            p->decrementOutDegree();
+            this->getNode(e->getTargetId())->decrementInDegree();
+
+            if (this->getNode(e->getTargetId())->getInDegree() == 0)
+            {
+                DAGQueue->queueUp(e->getTargetId()); 
+            }
+            e = e->getNextEdge();
+        }
     }
+
+    cout << endl << "Ordenacao Topologica do grafo direcionado acliclo: ";
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        cout << DAG[i] + 1 << " ";
+
+    }
+    cout << endl;
+
+    // Node *p = this->getFirstNode();
+    // Edge *e = p->getFirstEdge();
+
+
+    // while (e != nullptr)
+    // {
+    //     cout << p->getId() + 1 << " -> " << e->getTargetId() + 1 << endl;
+    //     e = e->getNextEdge();
+    // }
+    // cout << endl << endl;
+
+    // this->removeEdge(0, 1);
+
+    // e = p->getFirstEdge();
+    // while (e != nullptr)
+    // {
+    //     cout << p->getId() + 1 << " -> " << e->getTargetId() + 1 << endl;
+    //     e = e->getNextEdge();
+    // }
 
     // while (e != nullptr)
     // {
