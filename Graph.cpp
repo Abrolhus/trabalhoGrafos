@@ -176,6 +176,9 @@ void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
     Node* p = getNode(id-1);
     Node* aux = getNode(target_id-1);
 
+    p->incrementOutDegree();
+    aux->incrementInDegree();
+
     //confere se os nodes existem
     if (p != nullptr && aux != nullptr){
 
@@ -600,21 +603,58 @@ Graph* Graph::prim(){
     return grafoSolucao;
 }
 
-// //function that prints a topological sorting
-// void topologicalSorting(){
+void Graph::topologicalSorting(){
 
-// }
+    if (!this->getDirected() && this->isCyclicUtil())
+    {
+        cout << endl << "Ordenacao Topologica impossivel: grafo nao-direcionado ou ciclico" << endl;
+        return;
+    }
 
-// void breadthFirstSearch(ofstream& output_file){
+    ChainedQueue *DAGQueue = new ChainedQueue();
 
-// }
+    Node *p = this->getFirstNode();
+    while (p != nullptr)
+    {
+        if (p->getInDegree() == 0)
+        {
+            DAGQueue->queueUp(p->getId());
+        }
+        p = p->getNextNode();
+    }
 
-// Graph* agmKuskal(){
+    int cont = 0;
+    int DAG[this->getOrder()];
+    Edge *e = nullptr;
 
-// }
-// Graph* agmPrim(){
+    while (!DAGQueue->isEmpty())
+    {
+        p = this->getNode(DAGQueue->queueDown());
+        DAG[cont] = p->getId();
+        cont++;
 
-// }
+        e = p->getFirstEdge();
+        while (e != nullptr)
+        {
+            p->decrementOutDegree();
+            this->getNode(e->getTargetId())->decrementInDegree();
+
+            if (this->getNode(e->getTargetId())->getInDegree() == 0)
+            {
+                DAGQueue->queueUp(e->getTargetId()); 
+            }
+            e = e->getNextEdge();
+        }
+    }
+
+    cout << endl << "Ordenacao Topologica do grafo direcionado acliclo: ";
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        cout << DAG[i] + 1 << " ";
+
+    }
+    cout << endl;
+}
 
 bool Graph::checkContainsId(int id, int nodeList[], int listLength)
 {
