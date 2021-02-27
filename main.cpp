@@ -268,6 +268,13 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             //Ordenação Topologica;
         case 7:{
 
+            graph->topologicalSorting();
+
+            break;
+        }
+
+        case 0:{
+            
             break;
         }
         default:{

@@ -6,7 +6,7 @@
 - [x] d) Árvore Geradora Mínima usando o algoritmo de Prim;
 - [x] e) Árvore Geradora Mínima usando o algoritmo de Kruskal;
 - [x] f) Busca em largura a partir de um dado nó (parâmetro);
-- [ ] g) Ordenação topológica de um DAG (Grafo Acíclico Direcionado);
+- [X] g) Ordenação topológica de um DAG (Grafo Acíclico Direcionado);
 ## Parte 2:
 - [ ] Algorítmo Guloso
 - [ ] Algorítmo Guloso Randomizado
