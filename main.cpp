@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <chrono>
+#include <vector>
 #include "Graph.h"
 #include "Node.h"
 
@@ -188,7 +189,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cout << endl << "Quais nos devem induzir o grafo?" << endl;
             int nosLista[tamNosLista];
             int proxNo;
-            
+
             for (int i = 0; i < tamNosLista - 1; i++)
             {
                 cin >> proxNo;
@@ -230,6 +231,16 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             Graph* kruskal = graph->kruskal();
             cout << endl << "Arvore Geradora Minima usando Kruskal: " << endl;
             kruskal->print();
+            cout << endl;
+            cout << endl;
+            cout << endl;
+
+            vector<Graph*> kruskRands;
+            for(int i = 0; i < 200; i++){
+                kruskRands.push_back(graph->kruskalAleatorio());
+                // kruskRand->print();
+            }
+
 
             break;
 
@@ -290,6 +301,7 @@ int mainMenu(ofstream& output_file, Graph* graph){
 
 int main(int argc, char const *argv[]) {
 
+    srand(time(NULL));
     //Verificação se todos os parâmetros do programa foram entrados
     if (argc != 6) {
 
@@ -324,6 +336,12 @@ int main(int argc, char const *argv[]) {
     }else
         cout << "Unable to open " << argv[1];
 
+    /////graph->print();
+    /////graph->getNode(4)->removeEdge(0, 0, graph->getNode(0));
+    /////cout << graph->getNode(0)->getId() << endl;
+    ///////graph->getNode(0)->removeEdge(4, 0, graph->getNode(4));
+    /////graph->print();
+    // graph->getFirstNode()->removeEdge(
 
     mainMenu(output_file, graph);
     // cout << "teste 123" << endl;

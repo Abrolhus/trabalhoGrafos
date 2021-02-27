@@ -169,12 +169,10 @@ int Node::removeEdge(int id, bool directed, Node* target_node){
         // Verifies whether the graph is directed
         if(directed)
             this->decrementOutDegree();
-
         else{
 
             this->decrementInDegree();
             target_node->decrementInDegree();
-
         }
 
         return 1;

@@ -52,6 +52,7 @@ class Graph{
         void topologicalSorting();
         void breadthFirstSearch(int idFirstNode);
         Graph* kruskal();
+        Graph* kruskalAleatorio();
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
         float floydMarshall(int idSource, int idTarget);

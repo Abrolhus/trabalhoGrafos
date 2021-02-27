@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include <stdlib.h>
 #include "Node.h"
 #include "Edge.h"
 #include "QNode.h"
@@ -512,7 +513,7 @@ float Graph::dijkstra(int idSource, int idFinal){
 }
 
 int Graph::cheapestNeighbor(int neighborPath[], int visitedNodes[])
-{   
+{
     int min = INFINITO;
     int cheapestNeighborId;
 
@@ -583,7 +584,7 @@ Graph* Graph::prim(){
                 if (checkContainsId(e->getTargetId(), visitedNodes, this->getOrder()) && e->getWeight() < minimum)
                 {
                     minimum = e->getWeight();
-                    idAlvo = e->getTargetId(); 
+                    idAlvo = e->getTargetId();
                 }
                 e = e->getNextEdge();
             }
@@ -675,6 +676,7 @@ int Graph::listSortEdges(int isVisited[], EdgeInfo *graphEdges)
 
     for (int j = 0; j < listSize; j++)
     {
+        // TODO: botar um quicksor aq
         for (int k = j + 1; k < listSize; k++)
         {
             if(graphEdges[j].getEdgeWeight() > graphEdges[k].getEdgeWeight())
@@ -710,6 +712,7 @@ Graph* Graph::kruskal()
     int solutionSize = 0;
     Node *p = nullptr;
 
+    int weight = 0;
     for (int i = 0; i < listSize; i++)
     {
         //insere a aresta no grafo auxiliar
@@ -719,6 +722,7 @@ Graph* Graph::kruskal()
         if(!aux->isCyclicUtil())
         {
             edgeSolution[solutionSize] = graphEdges[i];
+            weight += graphEdges[i].getEdgeWeight();
             solutionSize++;
         }
         //caso forme um ciclo, retire a aresta recem adicionada
@@ -735,6 +739,78 @@ Graph* Graph::kruskal()
         }
     }
 
+    cout << "peso: " << weight << endl;
+    cout << endl;
+
+    delete [] graphEdges;
+    delete [] edgeSolution;
+    return aux;
+}
+Graph* Graph::kruskalAleatorio()
+{
+    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges);
+
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+    float alpha = 0.4;
+    int weight = 0;
+
+    cout << "nums: " << endl;
+    for (int i = 0; i < listSize; i++)
+    {
+//       [ (3, 5, 7*), 9, 10, 12]
+ //      [ 7, 5, 3, 9, 10, 12]
+  //     [ x, (5, 3, 9), 10, 12]
+
+        //insere a aresta no grafo auxiliar
+
+        // int randomI = min(rand()%((int)(alpha*listSize)), listSize - i);
+        cout << "list-i:" << listSize - i << " alpha*list:" << (int)(alpha*listSize);
+        int randomI = rand()%(min(listSize - i, (int)(alpha*listSize))) + i; // note que eu to arredondando para baixo, e.g. 3.3333 = 3;
+        cout << " "<<  randomI -i<< ", ";
+        EdgeInfo auxx = graphEdges[i];
+        graphEdges[i] = graphEdges[randomI];
+        graphEdges[randomI] = auxx;
+
+        aux->insertEdge(graphEdges[i].getNodeIdSource(), graphEdges[i].getNodeIdTarget(), graphEdges[i].getEdgeWeight());
+        // graphEdges.swap(i, randomI);
+
+
+        //caso nao forme ciclo, guarde a aresta na solucao
+        if(!aux->isCyclicUtil())
+        {
+            edgeSolution[solutionSize] = graphEdges[i];
+            weight += graphEdges[i].getEdgeWeight();
+            solutionSize++;
+        }
+        //caso forme um ciclo, retire a aresta recem adicionada
+        else
+        {
+            //ponteiro aponta pra no de saida e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdSource());
+            p->removeEdge(graphEdges[i].getNodeIdTarget(), this->directed, this->getNode(graphEdges[i].getNodeIdTarget()));
+
+            //ponteiro aponta para no de chegada e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdTarget());
+            p->removeEdge(graphEdges[i].getNodeIdSource(), this->directed, this->getNode(graphEdges[i].getNodeIdSource()));
+
+        }
+    }
+
+    cout << "peso: " << weight << endl;
     cout << endl;
 
     delete [] graphEdges;
