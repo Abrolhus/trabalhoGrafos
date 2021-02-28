@@ -26,6 +26,7 @@ class Graph{
         bool weighted_node;
         Node* first_node;
         Node* last_node;
+        Graph* dcMSTInteraction(float* minEdgeWeight, float* maxEdgeWeight, EdgeInfo* edges, int listSize, int isVisited[]);
 
     public:
         //Constructor
@@ -53,6 +54,7 @@ class Graph{
         void breadthFirstSearch(int idFirstNode);
         Graph* kruskal();
         Graph* kruskalAleatorio();
+        Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
         float floydMarshall(int idSource, int idTarget);

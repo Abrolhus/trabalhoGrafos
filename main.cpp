@@ -272,9 +272,17 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             break;
         }
+        case 8:{
+            cout << "dcMST: " << endl;
+            auto* dcMST = graph->dcMST(2, 10);
+            cout << "dcMST: " << endl;
+            dcMST->print();
+
+            break;
+       }
 
         case 0:{
-            
+
             break;
         }
         default:{
