@@ -7,7 +7,12 @@
 - [x] e) Árvore Geradora Mínima usando o algoritmo de Kruskal;
 - [x] f) Busca em largura a partir de um dado nó (parâmetro);
 - [X] g) Ordenação topológica de um DAG (Grafo Acíclico Direcionado);
+- [ ] Salvar grafo para .dot
 ## Parte 2:
 - [ ] Algorítmo Guloso
 - [ ] Algorítmo Guloso Randomizado
 - [ ] Algoritmo Guloso Randomizado Reativo
+
+
+### TO FIX:
+- [ ] Node::RemoveEdge
