@@ -10,6 +10,7 @@
 #include <stack>
 #include <list>
 #include <map>
+#include <vector>
 
 #define INF 10000.0f
 
@@ -26,7 +27,7 @@ class Graph{
         bool weighted_node;
         Node* first_node;
         Node* last_node;
-        Graph* dcMSTInteraction(float* minEdgeWeight, float* maxEdgeWeight, EdgeInfo* edges, int listSize, int isVisited[]);
+        Graph* dcMSTInteraction(float* minEdgeWeight, float* maxEdgeWeight, EdgeInfo* edges, int listSize, int isVisited[], std::vector<EdgeInfo>& solutionEdges);
 
     public:
         //Constructor

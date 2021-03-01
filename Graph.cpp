@@ -877,7 +877,9 @@ Graph* Graph::dcMST(int d, int interactions){
     cout << "sorted edge list done" << endl;
     float* minEdgeWeight = new float;
     float* maxEdgeWeight = new float;
-    Graph* mst = dcMSTInteraction(minEdgeWeight, maxEdgeWeight, graphEdges, listSize, isVisited);
+    /// jEdgeInfo *solutionEdges = new EdgeInfo[listSize];
+    vector<EdgeInfo> solutionEdges;
+    Graph* mst = dcMSTInteraction(minEdgeWeight, maxEdgeWeight, graphEdges, listSize, isVisited, solutionEdges);
     cout << "First interation done" << endl;
     float newWeight;
     float currentWeight;
@@ -885,43 +887,28 @@ Graph* Graph::dcMST(int d, int interactions){
     cout << "minEdgeWeight: " << minEdgeWeight << endl;
     cout << "maxEdgeWeight: " << maxEdgeWeight << endl;
     for(int i = 0; i < interactions; i++){
-        for(int j = 0; j < this->getNumberEdges(); j++){
-            currentWeight = graphEdges[j].getEdgeWeight();
+        for(int j = 0; j < solutionEdges.size(); j++){
+            currentWeight = solutionEdges[j].getEdgeWeight();
             cout << currentWeight << endl;
-            // fe = (int)(this->getNode(graphEdges[j].getNodeIdSource())->getInDegree() > d) + (int)(this->getNode(graphEdges[j].getNodeIdTarget())->getInDegree() > d); //note que getNode eh O(n)
-            fe = 1;
+            fe = (int)(this->getNode(graphEdges[j].getNodeIdSource())->getInDegree() > d) + (int)(this->getNode(graphEdges[j].getNodeIdTarget())->getInDegree() > d); //note que getNode eh O(n)
+            // fe = 1;
             newWeight = currentWeight + fe*((currentWeight - *minEdgeWeight)/(*maxEdgeWeight - *minEdgeWeight))*(*maxEdgeWeight);
             // newWeight = 3;
             cout << currentWeight << " -> " << newWeight << " " << endl;
-            graphEdges[j].setEdgeWeight(newWeight);
+            solutionEdges[j].setEdgeWeight(newWeight);
             // TODO: atualizar min and max weight;
             // obs: nao acho que seja necessario
 
         }
         cout << "first loop done " << endl;
-        mst = dcMSTInteraction(minEdgeWeight, maxEdgeWeight, graphEdges, listSize, isVisited);
+        mst = dcMSTInteraction(minEdgeWeight, maxEdgeWeight, graphEdges, listSize, isVisited, solutionEdges);
 
     }
     return mst;
 }
-Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, EdgeInfo graphEdges[], int listSize, int isVisited[]){
-    // EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
-    // int isVisited[this->getOrder()];
-
-    // for (int i = 0; i < this->getOrder(); i++)
-    // {
-        // isVisited[i] = -1;
-    // }
-
-    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
-    // int listSize = this->listSortEdges(isVisited, graphEdges);
-
-    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
-    //se o grafo se tornou ciclo ou não
+Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, EdgeInfo graphEdges[], int listSize, int isVisited[], vector<EdgeInfo>& solutionEdges){
     Graph *mst = new Graph(this->getOrder(), this->getDirected(),
                            this->getWeightedEdge(), this->getWeightedNode());
-    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
-    int solutionSize = 0;
     Node *p = nullptr;
 
     int weight = 0; // TODO: if weight is negative
@@ -930,6 +917,7 @@ Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, EdgeI
     int currentWeight;
     bool maxUnset = true;
     bool minUnset = true;
+    solutionEdges = vector<EdgeInfo>(); // clears solutionEdges vector;
     cout << "before for loop" << endl;
     for (int i = 0; i < listSize; i++)
     {
@@ -942,12 +930,12 @@ Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, EdgeI
         cout  << " jflskda" << endl;
         //caso nao forme ciclo, guarde a aresta na solucao
         if (!mst->isCyclicUtil()) {
-          edgeSolution[solutionSize] = graphEdges[i];
-          cout << edgeSolution[solutionSize].getEdgeWeight() << endl;
+          // solutionEdges[solutionSize] = graphEdges[i];
+          solutionEdges.push_back(graphEdges[i]);
           currentWeight = graphEdges[i].getEdgeWeight();
           cout << "currentWeight: " << graphEdges[i].getEdgeWeight();
           weight += currentWeight;
-          solutionSize++;
+          // solutionSize++;
           // updates minEdgeWeight and maxEdgeWeight if needed
           cout << "middle" << endl;
           if(!minUnset) {
