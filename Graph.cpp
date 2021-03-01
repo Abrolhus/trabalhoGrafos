@@ -190,7 +190,7 @@ void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
             p->insertEdge(target_id-1, weight);
             this->number_edges++;
 
-            // se o grafo for nao-direcionado e nao houver aresta de
+            // se o grafo for nao-direcionado e nao houver aresta de volta
             if (this->directed == 0 && !aux->searchEdge(id-1))
             {
                 //insere a aresta de volta
@@ -454,6 +454,106 @@ float Graph::floydMarshall(int idSource, int idTarget){
         cout << endl;
     }
     return edgeMatrix[idSource][idTarget];
+}
+
+void Graph::connectionsFloyd(){
+    vector<vector<float>> edgeMatrix(this->getOrder(), vector<float>(this->getOrder(), INF)); // matriz com os pesos das edges de todo noh (i) para cada outro noh (j)
+    for(int i = 0; i < this->getOrder(); i++){
+        for(int j = 0; j < this->getOrder(); j++){
+            cout << edgeMatrix[i][j] << ", ";
+        }
+        cout << endl;
+    }
+    for(auto node = this->getFirstNode(); node != nullptr; node = node->getNextNode()){ // O(n^2)
+        edgeMatrix[node->getId()][node->getId()] = 0;
+        for(auto edge = node->getFirstEdge(); edge != nullptr; edge = edge->getNextEdge()){
+            edgeMatrix[node->getId()][edge->getTargetId()] = edge->getWeight();
+        }
+
+    }
+    for(int k = 0; k < this->getOrder(); k++){
+        //percorrer matriz:
+        for(int i = 0; i < this->getOrder(); i++){
+            for(int j = 0; j < this->getOrder(); j++){
+                edgeMatrix[i][j] = min(edgeMatrix[i][j], edgeMatrix[i][k] + edgeMatrix[k][j]);
+            }
+        }
+    }
+    cout << "Matriz final do Floyd" << endl;
+    for(int i = 0; i < this->getOrder(); i++){
+        for(int j = 0; j < this->getOrder(); j++){
+            cout << edgeMatrix[i][j] << ", ";
+        }
+        cout << endl;
+    }
+
+    int exentricidade[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        exentricidade[i] = -1;
+    }
+
+    for (int i = 0; i < this->getOrder(); i++){
+        for (int j = 0; j < this->getOrder(); j++){
+            if (edgeMatrix[i][j] > exentricidade[i]){
+                exentricidade[i] = edgeMatrix[i][j];
+            }
+        }
+    }
+
+    cout << endl;
+    cout << "Exentricidade dos vértices: " << endl;
+    cout << "v: [\t";
+    for (int i = 0; i < this->getOrder(); i++){
+        cout << i + 1 << "\t";
+    }
+    cout << "]" << endl;
+    cout << "e: [\t";
+    for (int i = 0; i < this->getOrder(); i++){
+        cout << exentricidade[i] << "\t";
+    }
+    cout << "]" << endl;
+
+    int raio = INFINITO;
+    int diametro = -1;
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        if (exentricidade[i] > diametro)
+        {
+            diametro = exentricidade[i];
+        }
+
+        if (exentricidade[i] < raio)
+        {
+            raio = exentricidade[i];
+        }
+    }
+
+    cout << "Diametro: " << diametro << endl;
+    cout << "Raio: " << raio << endl;
+
+    cout << "Vertices centrais: ";
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        if (exentricidade[i] == raio)
+        {
+            cout << i + 1 << " ";
+        }
+    }
+    cout << endl;
+
+    cout << "Vertices perifericos: ";
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        if (exentricidade[i] == diametro)
+        {
+            cout << i + 1 << " ";
+        }
+    }
+    cout << endl;
+
 }
 
 
@@ -1044,7 +1144,7 @@ bool Graph::auxGetVertexInduced (int id, int* listIdNodes)
 
 void Graph::print(){
     cout << "imprimindo grafo" << endl;
-    cout << "Ordem: " << getOrder() << endl;
+    cout << "Ordem: " << this->getOrder() << endl;
     Node* p = first_node;
     while(p != nullptr){
         cout << p->getId() +1 << ": ";

@@ -60,6 +60,7 @@ class Graph{
         Graph* prim();
         float floydMarshall(int idSource, int idTarget);
         float dijkstra(int idSource, int idTarget);
+        void connectionsFloyd();
 
         //methods phase1
         float greed();

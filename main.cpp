@@ -26,6 +26,14 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
     //Criando objeto grafo
     Graph* graph = new Graph(order, directed, weightedEdge, weightedNode);
 
+    //cout << "Criando grafo..." << endl;
+    //cout << "Ordem: " << graph->getOrder() << endl;
+    //cout << "Direcionado? " << graph->getDirected() << endl;
+    //cout << "Arestas com peso? " << graph->getWeightedEdge() << endl;
+    //cout << "Vertices com peso? " << graph->getWeightedNode() << endl;
+
+    int cont = 1;
+
     //Leitura de arquivo
 
     if(!graph->getWeightedEdge() && !graph->getWeightedNode()){
@@ -41,8 +49,9 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
         float edgeWeight;
 
         while(input_file >> idNodeSource >> idNodeTarget >> edgeWeight) {
-
+            //cout << "Inserindo aresta #" << cont << ": " << idNodeSource << " -> " << idNodeTarget << ". Peso: " << edgeWeight << endl;
             graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, edgeWeight);
+            cont++;
 
         }
 
@@ -159,6 +168,7 @@ int menu(){
     cout << "[8] Algoritmo Guloso" << endl;
     cout << "[9] Algoritmo Guloso Randomizado " << endl;
     cout << "[10] Algoritmo Guloso Randomizado Reativo" << endl;
+    cout << "[11] Conexidade" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -277,6 +287,13 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             auto* dcMST = graph->dcMST(2, 10);
             cout << "dcMST: " << endl;
             dcMST->print();
+
+            break;
+       }
+       case 11:{
+
+            graph->connectionsFloyd();
+
 
             break;
        }
