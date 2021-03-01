@@ -32,7 +32,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
     //cout << "Arestas com peso? " << graph->getWeightedEdge() << endl;
     //cout << "Vertices com peso? " << graph->getWeightedNode() << endl;
 
-    int cont = 1;
+    //int cont = 1;
 
     //Leitura de arquivo
 
@@ -51,7 +51,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
         while(input_file >> idNodeSource >> idNodeTarget >> edgeWeight) {
             //cout << "Inserindo aresta #" << cont << ": " << idNodeSource << " -> " << idNodeTarget << ". Peso: " << edgeWeight << endl;
             graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, edgeWeight);
-            cont++;
+            //cont++;
 
         }
 
