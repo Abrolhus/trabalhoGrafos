@@ -250,7 +250,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             vector<Graph*> kruskRands;
             for(int i = 0; i < 200; i++){
-                kruskRands.push_back(graph->kruskalAleatorio());
+                kruskRands.push_back(graph->kruskalAleatorio(2));
                 // kruskRand->print();
             }
 

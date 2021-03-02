@@ -54,7 +54,7 @@ class Graph{
         void topologicalSorting();
         void breadthFirstSearch(int idFirstNode);
         Graph* kruskal();
-        Graph* kruskalAleatorio();
+        Graph* kruskalAleatorio(int grauRestricao);
         Graph* kruskalRestritivo(int grauRestricao);
         Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);

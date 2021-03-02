@@ -890,7 +890,7 @@ Graph* Graph::kruskal()
 }
 
 
-Graph* Graph::kruskalAleatorio()
+Graph* Graph::kruskalAleatorio(int grauRestricao)
 {
     EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
     int isVisited[this->getOrder()];
@@ -912,7 +912,7 @@ Graph* Graph::kruskalAleatorio()
     float alpha = 0.4;
     int weight = 0;
 
-    cout << "nums: " << endl;
+    //cout << "nums: " << endl;
     for (int i = 0; i < listSize; i++)
     {
 //       [ (3, 5, 7*), 9, 10, 12]
@@ -922,9 +922,9 @@ Graph* Graph::kruskalAleatorio()
         //insere a aresta no grafo auxiliar
 
         // int randomI = min(rand()%((int)(alpha*listSize)), listSize - i);
-        cout << "list-i:" << listSize - i << " alpha*list:" << (int)(alpha*listSize);
+        //cout << "list-i:" << listSize - i << " alpha*list:" << (int)(alpha*listSize);
         int randomI = rand()%(min(listSize - i, (int)(alpha*listSize))) + i; // note que eu to arredondando para baixo, e.g. 3.3333 = 3;
-        cout << " "<<  randomI -i<< ", ";
+        //cout << " "<<  randomI -i<< ", ";
         EdgeInfo auxx = graphEdges[i];
         graphEdges[i] = graphEdges[randomI];
         graphEdges[randomI] = auxx;
@@ -934,7 +934,8 @@ Graph* Graph::kruskalAleatorio()
 
 
         //caso nao forme ciclo, guarde a aresta na solucao
-        if(!aux->isCyclicUtil())
+        if(!aux->isCyclicUtil() && aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() <= grauRestricao
+        					 && aux->getNode(graphEdges[i].getNodeIdTarget())->getDegree() <= grauRestricao)
         {
             edgeSolution[solutionSize] = graphEdges[i];
             weight += graphEdges[i].getEdgeWeight();
