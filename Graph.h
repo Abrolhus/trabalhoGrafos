@@ -55,6 +55,7 @@ class Graph{
         void breadthFirstSearch(int idFirstNode);
         Graph* kruskal();
         Graph* kruskalAleatorio();
+        Graph* kruskalRestritivo(int grauRestricao);
         Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
@@ -65,6 +66,7 @@ class Graph{
         //methods phase1
         float greed();
         void escreverEmArquivo(ofstream& output_file);
+        void escreverEmArquivoTeste(ofstream& output_file);
         float greedRandom();
         float greedRactiveRandom();
         void print();

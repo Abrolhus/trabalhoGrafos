@@ -16,6 +16,7 @@ Node::Node(int id){
     this->id = id;
     this->in_degree = 0;
     this->out_degree = 0;
+    this->degree = 0;
     this->weight = 0;
     this->first_edge = nullptr;
     this->last_edge = nullptr;
@@ -70,6 +71,12 @@ int Node::getOutDegree(){
 
 }
 
+int Node::getDegree(){
+
+    return this->degree;
+
+}
+
 float Node::getWeight(){
 
     return this->weight;
@@ -100,6 +107,8 @@ void Node::setWeight(float weight){
 void Node::insertEdge(int target_id, float weight){
     // target = 1;
     // Verifies whether there are at least one edge in the node
+
+    this->incrementDegree();
 
     if(this->first_edge != nullptr){
         // Allocating the new edge and keeping the integrity of the edge list
@@ -143,6 +152,8 @@ int Node::removeEdge(int id, bool directed, Node* target_node){
     // Verifies whether the edge to remove is in the node
     if(this->searchEdge(id)){
 
+        this->decrementDegree();
+
         Edge* aux = this->first_edge;
         Edge* previous = nullptr;
         // Searching for the edge to be removed
@@ -166,7 +177,7 @@ int Node::removeEdge(int id, bool directed, Node* target_node){
             this->last_edge = aux->getNextEdge();
 
         delete aux;
-        // Verifies whether the graph is directed
+        //Verifies whether the graph is directed
         if(directed)
             this->decrementOutDegree();
         else{
@@ -174,6 +185,9 @@ int Node::removeEdge(int id, bool directed, Node* target_node){
             this->decrementInDegree();
             target_node->decrementInDegree();
         }
+
+        // this->decrementOutDegree();
+        // target_node->decrementInDegree();
 
         return 1;
 
@@ -251,6 +265,12 @@ void Node::incrementOutDegree(){
 
 }
 
+void Node::incrementDegree(){
+
+    this->degree++;
+
+}
+
 void Node::decrementInDegree(){
 
     this->in_degree--;
@@ -260,6 +280,12 @@ void Node::decrementInDegree(){
 void Node::decrementOutDegree(){
 
     this->out_degree--;
+
+}
+
+void Node::decrementDegree(){
+
+    this->degree--;
 
 }
 

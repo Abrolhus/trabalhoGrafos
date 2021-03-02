@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <chrono>
 #include <vector>
+#include "ChainedQueue.h"
 #include "Graph.h"
 #include "Node.h"
 
@@ -26,13 +27,13 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
     //Criando objeto grafo
     Graph* graph = new Graph(order, directed, weightedEdge, weightedNode);
 
-    //cout << "Criando grafo..." << endl;
-    //cout << "Ordem: " << graph->getOrder() << endl;
-    //cout << "Direcionado? " << graph->getDirected() << endl;
-    //cout << "Arestas com peso? " << graph->getWeightedEdge() << endl;
-    //cout << "Vertices com peso? " << graph->getWeightedNode() << endl;
+    cout << "Criando grafo..." << endl;
+    cout << "Ordem: " << graph->getOrder() << endl;
+    cout << "Direcionado? " << graph->getDirected() << endl;
+    cout << "Arestas com peso? " << graph->getWeightedEdge() << endl;
+    cout << "Vertices com peso? " << graph->getWeightedNode() << endl;
 
-    //int cont = 1;
+    int cont = 1;
 
     //Leitura de arquivo
 
@@ -51,7 +52,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
         while(input_file >> idNodeSource >> idNodeTarget >> edgeWeight) {
             //cout << "Inserindo aresta #" << cont << ": " << idNodeSource << " -> " << idNodeTarget << ". Peso: " << edgeWeight << endl;
             graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, edgeWeight);
-            //cont++;
+            cont++;
 
         }
 
@@ -169,6 +170,8 @@ int menu(){
     cout << "[9] Algoritmo Guloso Randomizado " << endl;
     cout << "[10] Algoritmo Guloso Randomizado Reativo" << endl;
     cout << "[11] Conexidade" << endl;
+    cout << "[12] Escreve grafo em arquivo" << endl;
+    cout << "[13] Kruskal com restricao de grau" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -297,6 +300,20 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             break;
        }
+       case 12:{
+
+            graph->escreverEmArquivoTeste(output_file);
+            break;
+       }
+
+       case 13:{
+            int grauRestricao;
+            cout << "Deseja restringir a que grau? " << endl;
+            cin >> grauRestricao;
+            Graph* kruskalRestritivo = graph->kruskalRestritivo(grauRestricao);
+            kruskalRestritivo->print();
+            break;
+       }
 
         case 0:{
 
@@ -368,6 +385,8 @@ int main(int argc, char const *argv[]) {
     }else
         cout << "Unable to open " << argv[1];
 
+    //graph->escreverEmArquivoTeste(output_file);
+
     /////graph->print();
     /////graph->getNode(4)->removeEdge(0, 0, graph->getNode(0));
     /////cout << graph->getNode(0)->getId() << endl;
@@ -410,7 +429,6 @@ int main(int argc, char const *argv[]) {
     input_file.close();
 
     //Fechando arquivo de saída
-    graph->escreverEmArquivo(output_file);
     output_file.close();
 
     return 0;

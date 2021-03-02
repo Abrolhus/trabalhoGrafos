@@ -174,8 +174,8 @@ void Graph::insertEdge(int id, int target_id, float weight)
 void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
 {
     //cria um ponteiro para o node desejado e o um auxiliar para o node alvo da aresta
-    Node* p = getNode(id-1);
-    Node* aux = getNode(target_id-1);
+    Node* p = getNode(id);
+    Node* aux = getNode(target_id);
 
     p->incrementOutDegree();
     aux->incrementInDegree();
@@ -184,17 +184,18 @@ void Graph::insertEdgePreguicoso(int id, int target_id, float weight)
     if (p != nullptr && aux != nullptr){
 
         //confere se a aresta já existe
-        if (!p->searchEdge(target_id-1)){
+        if (!p->searchEdge(target_id)){
 
             //caso o node exista mas a aresta nao, insere a aresta
-            p->insertEdge(target_id-1, weight);
+            p->insertEdge(target_id, weight);
+            cout << "Aresta: " << id <<  "->" << target_id << endl;
             this->number_edges++;
 
             // se o grafo for nao-direcionado e nao houver aresta de volta
-            if (this->directed == 0 && !aux->searchEdge(id-1))
+            if (this->directed == 0 && !aux->searchEdge(id))
             {
                 //insere a aresta de volta
-                aux->insertEdge(id-1, weight);
+                aux->insertEdge(id, weight);
                 this->number_edges++;
             }
         }
@@ -481,10 +482,11 @@ void Graph::connectionsFloyd(){
     }
     cout << "Matriz final do Floyd" << endl;
     for(int i = 0; i < this->getOrder(); i++){
+        cout << "[\t";
         for(int j = 0; j < this->getOrder(); j++){
-            cout << edgeMatrix[i][j] << ", ";
+            cout << edgeMatrix[i][j] << "\t";
         }
-        cout << endl;
+        cout << "]" << endl;
     }
 
     int exentricidade[this->getOrder()];
@@ -886,6 +888,8 @@ Graph* Graph::kruskal()
     delete [] edgeSolution;
     return aux;
 }
+
+
 Graph* Graph::kruskalAleatorio()
 {
     EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
@@ -958,6 +962,7 @@ Graph* Graph::kruskalAleatorio()
     return aux;
 }
 
+
 bool Graph::isCyclicUtil()
 {
     if (this->directed)
@@ -965,6 +970,8 @@ bool Graph::isCyclicUtil()
     else
         return this->isCyclic();
 }
+
+
 Graph* Graph::dcMST(int d, int interactions){
     EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
     int isVisited[this->getOrder()];
@@ -1083,6 +1090,62 @@ Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, EdgeI
     return mst;
 }
 
+Graph* Graph::kruskalRestritivo(int grauRestricao)
+{
+    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges);
+
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+
+    int weight = 0;
+    for (int i = 0; i < listSize; i++)
+    {
+        //insere a aresta no grafo auxiliar
+        aux->insertEdge(graphEdges[i].getNodeIdSource(), graphEdges[i].getNodeIdTarget(), graphEdges[i].getEdgeWeight());
+
+        //caso nao forme ciclo, guarde a aresta na solucao
+        if(!aux->isCyclicUtil() && aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() <= grauRestricao
+        					 && aux->getNode(graphEdges[i].getNodeIdTarget())->getDegree() <= grauRestricao)
+        {
+            edgeSolution[solutionSize] = graphEdges[i];
+            weight += graphEdges[i].getEdgeWeight();
+            solutionSize++;
+        }
+        //caso forme um ciclo ou o grau do vertice ultrapasse 2, retire a aresta recem adicionada
+        else
+        {
+            //ponteiro aponta pra no de saida e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdSource());
+            p->removeEdge(graphEdges[i].getNodeIdTarget(), this->directed, this->getNode(graphEdges[i].getNodeIdTarget()));
+
+            //ponteiro aponta para no de chegada e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdTarget());
+            p->removeEdge(graphEdges[i].getNodeIdSource(), this->directed, this->getNode(graphEdges[i].getNodeIdSource()));
+
+        }
+    }
+
+    cout << "peso: " << weight << endl;
+    cout << endl;
+
+    // delete [] graphEdges;
+    delete [] edgeSolution;
+    return aux;
+}
+
 Graph* Graph::getVertexInduced(int* listIdNodes){
 
     //Cria grafo vazio
@@ -1153,7 +1216,7 @@ void Graph::print(){
             cout << "->" << e->getTargetId()+1 << " ";
             e = e->getNextEdge();
         }
-        cout << endl;
+        cout << "\t GRAU: " << p->getDegree() << endl;
         p = p->getNextNode();
     }
 
@@ -1175,6 +1238,29 @@ void Graph::escreverEmArquivo(ofstream& output_file){
         p = p->getNextNode();
     }
 
+
+
+    return;
+}
+
+void Graph::escreverEmArquivoTeste(ofstream& output_file){
+
+    output_file << "graph GrafoOrdem" << this->getOrder() << " {" << endl;
+    Node *p = this->getFirstNode();
+    while (p != nullptr)
+    {
+        output_file << p->getId();
+        Edge* e = p->getFirstEdge();
+        while (e != nullptr)
+        {
+            output_file << " -- " << e->getTargetId();
+            e = e->getNextEdge();
+        }
+        output_file << endl;
+        p = p->getNextNode();
+    }
+    output_file << endl;
+    output_file << "}";
 
 
     return;

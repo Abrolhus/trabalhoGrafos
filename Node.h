@@ -18,6 +18,7 @@ class Node{
         int id;
         unsigned int in_degree;
         unsigned int out_degree;
+        int degree;
         float weight;
         Node* next_node;
 
@@ -32,6 +33,7 @@ class Node{
         int getId();
         int getInDegree();
         int getOutDegree();
+        int getDegree();
         float getWeight();
         Node* getNextNode();
         // Setters
@@ -44,6 +46,8 @@ class Node{
         int removeEdge(int id, bool directed, Node* target_node);
         void incrementOutDegree();
         void decrementOutDegree();
+        void incrementDegree();
+        void decrementDegree();
         void incrementInDegree();
         void decrementInDegree();
         Edge* hasEdgeBetween(int target_id);
