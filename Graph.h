@@ -53,15 +53,19 @@ class Graph{
         //methods phase1
         void topologicalSorting();
         void breadthFirstSearch(int idFirstNode);
-        Graph* kruskal();
-        Graph* kruskalAleatorio(int grauRestricao);
-        Graph* kruskalRestritivo(int grauRestricao);
         Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
         float floydMarshall(int idSource, int idTarget);
         float dijkstra(int idSource, int idTarget);
         void connectionsFloyd();
+
+        //Kruskals
+        Graph* kruskal();
+        Graph* kruskalAleatorio();
+        Graph* kruskalRestritivo(int grauRestricao);
+        void auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph);
+        Graph* kruskalAleatorioRestritivo(int grauRestricao, int numberIteration);
 
         //methods phase1
         float greed();

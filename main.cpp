@@ -172,6 +172,8 @@ int menu(){
     cout << "[11] Conexidade" << endl;
     cout << "[12] Escreve grafo em arquivo" << endl;
     cout << "[13] Kruskal com restricao de grau" << endl;
+    cout << "[14] Kruskal aleatorio com restricao de grau" << endl;
+    cout << "[15] Kruskal aleatorio" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -183,9 +185,9 @@ int menu(){
 void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
     // MOSTRANDO O GRAFO AQUI
-    cout << endl << "Grafo vigente: " << endl;
-    graph->print();
-    cout << endl;
+    // cout << endl << "Grafo vigente: " << endl;
+    // graph->print();
+    // cout << endl;
 
     switch (selecao)
     {
@@ -242,17 +244,20 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
         case 5:{
 
             Graph* kruskal = graph->kruskal();
-            cout << endl << "Arvore Geradora Minima usando Kruskal: " << endl;
-            kruskal->print();
-            cout << endl;
-            cout << endl;
-            cout << endl;
+            // cout << endl << "Arvore Geradora Minima usando Kruskal: " << endl;
+            // kruskal->print();
+            // cout << endl;
+            // cout << endl;
+            // cout << endl;
 
-            vector<Graph*> kruskRands;
-            for(int i = 0; i < 200; i++){
-                kruskRands.push_back(graph->kruskalAleatorio(2));
-                // kruskRand->print();
-            }
+            // vector<Graph*> kruskRands;
+            // for(int i = 0; i < 200; i++){
+            //     kruskRands.push_back(graph->kruskalAleatorio(2));
+            //     // kruskRand->print();
+            // }
+
+            // Graph* kruskal = graph->auxKruskalAleatorio(3, 200);
+            // kruskal->print();
 
 
             break;
@@ -311,8 +316,32 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cout << "Deseja restringir a que grau? " << endl;
             cin >> grauRestricao;
             Graph* kruskalRestritivo = graph->kruskalRestritivo(grauRestricao);
-            kruskalRestritivo->print();
+            //kruskalRestritivo->print();
             break;
+       }
+
+       case 14:{
+            int grauRestritivo;
+            int numeroIteracoes;
+
+            cout << "Deseja restringir a que grau? " << endl;
+            cin >> grauRestritivo;
+
+            cout << "Quantas iteracoes deseja?" << endl;
+            cin >> numeroIteracoes;
+
+            Graph* kruskalRes = graph->kruskalAleatorioRestritivo(grauRestritivo, numeroIteracoes);
+            //kruskalRes->print();
+            break;
+
+       }
+
+       case 15:{
+
+            Graph* kruskalAle = graph->kruskalAleatorio();
+            //kruskalAle->print();
+            break;
+
        }
 
         case 0:{
