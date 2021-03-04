@@ -12,6 +12,7 @@
 - [x] Algorítmo Guloso
 - [x] Algorítmo Guloso Randomizado
 - [ ] Algoritmo Guloso Randomizado Reativo
+- [x] Kruskal Randomizado
 
 
 ### TO FIX:
