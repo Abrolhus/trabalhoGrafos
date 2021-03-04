@@ -137,7 +137,6 @@ Graph* leituraInstancia_PARA_TESTES(ifstream& input_file, int directed, int weig
     graph->insertEdge(1,4,2);
     graph->insertEdge(3,4,1);
     graph->insertEdge(4,2,7);
-
     // Leitura de arquivo
 //    while(input_file >> idNodeSource >> idNodeTarget) {
 //
