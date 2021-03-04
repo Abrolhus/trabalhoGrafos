@@ -908,17 +908,14 @@ Graph* Graph::kruskalRestritivo(int grauRestricao)
     {
         isVisited[i] = -1;
     }
-
     //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
-    int listSize = this->listSortEdges(isVisited, graphEdges);
-
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
     //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
     //se o grafo se tornou ciclo ou não
     Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
     EdgeInfo *edgeSolution = new EdgeInfo[listSize];
     int solutionSize = 0;
     Node *p = nullptr;
-
     int weight = 0;
     for (int i = 0; i < listSize; i++)
     {
@@ -1028,22 +1025,9 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
 {
 	Graph *optimalGraph = nullptr;
 	int bestCost = INT_MAX;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges()/(1+(1 - (int)this->getDirected() ))); // cria um vetor com as Edges do grafo, tamanho eh dividido por dois caso o grafo seja nao direcionado
+    // auto graphEdges = vector<EdgeInfo>(this->getNumberEdges()/(1)); // cria um vetor com as Edges do grafo, tamanho eh dividido por dois caso o grafo seja nao direcionado
 
-    for(int i = 0; i < numberIteration; i++){
-    	cout << "i: " << i << " ";
-    	this->auxKruskalAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph);
-    }
-
-    cout << "Melhor custo de AGM: " << bestCost << endl;
-
-
-    return optimalGraph;
-}
-
-
-void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph)
-{
-    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     int isVisited[this->getOrder()];
 
     for (int i = 0; i < this->getOrder(); i++)
@@ -1053,9 +1037,37 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
 
     //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
     int listSize = this->listSortEdges(isVisited, graphEdges);
+    cout << "listSize: " << listSize << endl;
+    cout << "graphEdgesSize: " << graphEdges.size() << endl;
+
+    for(int i = 0; i < numberIteration; i++){
+    	cout << "i: " << i << " ";
+    	this->auxKruskalAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize);
+    }
+
+    cout << "Melhor custo de AGM: " << bestCost << endl;
+
+
+    return optimalGraph;
+}
+
+
+void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo>& graphEdges, int listSize)
+{
+    /// auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    /// int isVisited[this->getOrder()];
+///
+    /// for (int i = 0; i < this->getOrder(); i++)
+    /// {
+        /// isVisited[i] = -1;
+    /// }
+///
+    /// //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    /// int listSize = this->listSortEdges(isVisited, graphEdges);
 
     //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
     //se o grafo se tornou ciclo ou não
+    // int listSize = graphEdges.size();
     Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
     EdgeInfo *edgeSolution = new EdgeInfo[listSize];
     int solutionSize = 0;
@@ -1066,14 +1078,8 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
     //cout << "nums: " << endl;
     for (int i = 0; i < listSize; i++)
     {
-//       [ (3, 5, 7*), 9, 10, 12]
- //      [ 7, 5, 3, 9, 10, 12]
-  //     [ x, (5, 3, 9), 10, 12]
-
         //insere a aresta no grafo auxiliar
 
-        // int randomI = min(rand()%((int)(alpha*listSize)), listSize - i);
-        //cout << "list-i:" << listSize - i << " alpha*list:" << (int)(alpha*listSize);
         int randomI = rand()%(min(listSize - i, (int)(alpha*listSize))) + i; // note que eu to arredondando para baixo, e.g. 3.3333 = 3;
         //cout << " "<<  randomI -i<< ", ";
         EdgeInfo auxx = graphEdges[i];
@@ -1081,8 +1087,6 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
         graphEdges[randomI] = auxx;
 
         aux->insertEdge(graphEdges[i].getNodeIdSource(), graphEdges[i].getNodeIdTarget(), graphEdges[i].getEdgeWeight());
-        // graphEdges.swap(i, randomI);
-
 
         //caso nao forme ciclo, guarde a aresta na solucao
         if(!aux->isCyclicUtil() && aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() <= grauRestricao
