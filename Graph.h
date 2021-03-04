@@ -64,7 +64,7 @@ class Graph{
         Graph* kruskal();
         Graph* kruskalAleatorio();
         Graph* kruskalRestritivo(int grauRestricao);
-        void auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, std::vector<EdgeInfo>& graphEdges, int listSize);
+        void auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, std::vector<EdgeInfo> graphEdges, int listSize);
         Graph* kruskalAleatorioRestritivo(int grauRestricao, int numberIteration);
 
         //methods phase1

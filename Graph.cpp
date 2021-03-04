@@ -1052,7 +1052,7 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
 }
 
 
-void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo>& graphEdges, int listSize)
+void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize)
 {
     /// auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     /// int isVisited[this->getOrder()];
