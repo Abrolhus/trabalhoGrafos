@@ -9,8 +9,8 @@
 - [X] g) Ordenação topológica de um DAG (Grafo Acíclico Direcionado);
 - [ ] Salvar grafo para .dot
 ## Parte 2:
-- [ ] Algorítmo Guloso
-- [ ] Algorítmo Guloso Randomizado
+- [x] Algorítmo Guloso
+- [x] Algorítmo Guloso Randomizado
 - [ ] Algoritmo Guloso Randomizado Reativo
 
 
