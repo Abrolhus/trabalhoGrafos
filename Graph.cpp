@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include <algorithm>
 #include <stdlib.h>
 #include "Node.h"
 #include "Edge.h"
@@ -44,6 +45,9 @@ public:
     else return (lhs->pathCost>rhs->pathCost);
   }
 };
+bool compareEdges(EdgeInfo lhs, EdgeInfo rhs){
+    return (lhs.getEdgeWeight()<rhs.getEdgeWeight());
+}
 
 // Constructor
 Graph::Graph(int order, bool directed, bool weighted_edge, bool weighted_node)
@@ -771,7 +775,7 @@ bool Graph::checkContainsId(int id, int nodeList[], int listLength)
     return false;
 }
 
-int Graph::listSortEdges(int isVisited[], EdgeInfo *graphEdges)
+int Graph::listSortEdges(int isVisited[], vector<EdgeInfo>& graphEdges)
 {
     Node *p = first_node;
     Edge *e = p->getFirstEdge();
@@ -816,28 +820,29 @@ int Graph::listSortEdges(int isVisited[], EdgeInfo *graphEdges)
 
     //depois de adicionadas, as organiza de mais barata a mais cara
     EdgeInfo aux;
+    std::sort(graphEdges.begin(), graphEdges.end(), compareEdges);
 
-    for (int j = 0; j < listSize; j++)
-    {
-        // TODO: botar um quicksor aq
-        for (int k = j + 1; k < listSize; k++)
-        {
-            if(graphEdges[j].getEdgeWeight() > graphEdges[k].getEdgeWeight())
-            {
-                aux = graphEdges[j];
-                graphEdges[j] = graphEdges[k];
-                graphEdges[k] = aux;
-            }
-        }
-
-    }
+    // for (int j = 0; j < listSize; j++)
+    // {
+        // // TODO: botar um quicksor aq
+        // for (int k = j + 1; k < listSize; k++)
+        // {
+            // if(graphEdges[j].getEdgeWeight() > graphEdges[k].getEdgeWeight())
+            // {
+                // aux = graphEdges[j];
+                // graphEdges[j] = graphEdges[k];
+                // graphEdges[k] = aux;
+            // }
+        // }
+//
+    // }
 
     return listSize;
 }
 
 Graph* Graph::kruskal()
 {
-    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges(), EdgeInfo());
     int isVisited[this->getOrder()];
 
     for (int i = 0; i < this->getOrder(); i++)
@@ -847,11 +852,14 @@ Graph* Graph::kruskal()
 
     //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
     int listSize = this->listSortEdges(isVisited, graphEdges);
+    for(auto edge : graphEdges){
+        cout << edge.getEdgeWeight() << ", ";
+    } cout << endl;
 
     //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
     //se o grafo se tornou ciclo ou não
     Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
-    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    auto edgeSolution = vector<EdgeInfo>(listSize);
     int solutionSize = 0;
     Node *p = nullptr;
 
@@ -888,14 +896,13 @@ Graph* Graph::kruskal()
     cout << endl;
 
     // delete [] graphEdges;
-    delete [] edgeSolution;
     return aux;
 }
 
 Graph* Graph::kruskalRestritivo(int grauRestricao)
 {
-    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
     int isVisited[this->getOrder()];
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
 
     for (int i = 0; i < this->getOrder(); i++)
     {
@@ -950,7 +957,7 @@ Graph* Graph::kruskalRestritivo(int grauRestricao)
 
 Graph* Graph::kruskalAleatorio()
 {
-    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     int isVisited[this->getOrder()];
 
     for (int i = 0; i < this->getOrder(); i++)
@@ -1036,7 +1043,7 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
 
 void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph)
 {
-    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     int isVisited[this->getOrder()];
 
     for (int i = 0; i < this->getOrder(); i++)
@@ -1109,7 +1116,6 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
 
     cout << endl;
 
-    delete [] graphEdges;
     delete [] edgeSolution;
 }
 
@@ -1124,7 +1130,7 @@ bool Graph::isCyclicUtil()
 
 
 Graph* Graph::dcMST(int d, int interactions){
-    EdgeInfo *graphEdges = new EdgeInfo[this->getNumberEdges()];
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     int isVisited[this->getOrder()];
     for (int i = 0; i < this->getOrder(); i++)
     {
@@ -1164,7 +1170,7 @@ Graph* Graph::dcMST(int d, int interactions){
     }
     return mst;
 }
-Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, EdgeInfo graphEdges[], int listSize, int isVisited[], vector<EdgeInfo>& solutionEdges){
+Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, vector<EdgeInfo> graphEdges, int listSize, int isVisited[], vector<EdgeInfo>& solutionEdges){
     Graph *mst = new Graph(this->getOrder(), this->getDirected(),
                            this->getWeightedEdge(), this->getWeightedNode());
     Node *p = nullptr;

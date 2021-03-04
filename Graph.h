@@ -27,7 +27,7 @@ class Graph{
         bool weighted_node;
         Node* first_node;
         Node* last_node;
-        Graph* dcMSTInteraction(float* minEdgeWeight, float* maxEdgeWeight, EdgeInfo* edges, int listSize, int isVisited[], std::vector<EdgeInfo>& solutionEdges);
+        Graph* dcMSTInteraction(float* minEdgeWeight, float* maxEdgeWeight, std::vector<EdgeInfo> edges, int listSize, int isVisited[], std::vector<EdgeInfo>& solutionEdges);
 
     public:
         //Constructor
@@ -75,18 +75,18 @@ class Graph{
         float greedRactiveRandom();
         void print();
 
+        bool checkContainsId(int id, int nodeList[], int listLength);
+    private:
+        //Auxiliar methods
+        int listSortEdges(int isVisited[], vector<EdgeInfo>& graphEdges);
         int cheapestNeighbor(int neighborPath[], int visitedNodes[]);
         void updateNeighborPath(int id, int neighborPath[]);
-        int listSortEdges(int isVisited[], EdgeInfo *graphEdges);
-        bool checkContainsId(int id, int nodeList[], int listLength);
-        bool auxGetVertexInduced (int id, int* listIdNodes);
         bool isCyclic();
+        bool auxGetVertexInduced (int id, int* listIdNodes);
         bool auxIsCyclic(int nodeId, bool isVisited[], int parentId);
         bool isCyclicDirected();
         bool auxIsCyclicDirected(int nodeId, bool isVisited[], bool *isContainedRecusirve);
         bool isCyclicUtil();
-    private:
-        //Auxiliar methods
 
 };
 
