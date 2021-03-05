@@ -20,6 +20,7 @@
 #include <queue>
 #include <vector>
 #include <climits>
+#include <chrono>
 #define INFINITO 9999;
 
 using namespace std;
@@ -952,6 +953,56 @@ Graph* Graph::kruskalRestritivo(int grauRestricao)
     return aux;
 }
 
+int Graph::utilKruskalRestritivo(int grauRestricao)
+{
+    int isVisited[this->getOrder()];
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+    int weight = 0;
+    for (int i = 0; i < listSize; i++)
+    {
+        //insere a aresta no grafo auxiliar
+        aux->insertEdge(graphEdges[i].getNodeIdSource(), graphEdges[i].getNodeIdTarget(), graphEdges[i].getEdgeWeight());
+
+        //caso nao forme ciclo, guarde a aresta na solucao
+        if(!aux->isCyclicUtil() && aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() <= grauRestricao
+                             && aux->getNode(graphEdges[i].getNodeIdTarget())->getDegree() <= grauRestricao)
+        {
+            //cout << "peso antes: " << weight << endl;
+            weight += graphEdges[i].getEdgeWeight();
+            //cout << "peso depois: " << weight << endl;
+        }
+        //caso forme um ciclo ou o grau do vertice ultrapasse 2, retire a aresta recem adicionada
+        else
+        {
+            //ponteiro aponta pra no de saida e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdSource());
+            p->removeEdge(graphEdges[i].getNodeIdTarget(), this->directed, this->getNode(graphEdges[i].getNodeIdTarget()));
+
+            //ponteiro aponta para no de chegada e remove a aresta
+            p = aux->getNode(graphEdges[i].getNodeIdTarget());
+            p->removeEdge(graphEdges[i].getNodeIdSource(), this->directed, this->getNode(graphEdges[i].getNodeIdSource()));
+
+        }
+    }
+
+    // delete [] graphEdges;
+    delete [] edgeSolution;
+    return weight;
+}
+
 Graph* Graph::kruskalAleatorio()
 {
     auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
@@ -1023,6 +1074,21 @@ Graph* Graph::kruskalAleatorio()
 
 Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
 {
+    // INICIO DO CODIGO SOLTA O RELOGIO
+    double sum = 0;
+    double add = 1;
+    auto begin = std::chrono::high_resolution_clock::now();
+    
+    int iterations = 1000*1000*1000;
+    for (int i=0; i<iterations; i++) {
+        sum += add;
+        add /= 2.0;
+    }
+    // FIM
+
+    int solucaoRestritivo = utilKruskalRestritivo(grauRestricao);
+
+
 	Graph *optimalGraph = nullptr;
 	int bestCost = INT_MAX;
     auto graphEdges = vector<EdgeInfo>(this->getNumberEdges()/(1+(1 - (int)this->getDirected() ))); // cria um vetor com as Edges do grafo, tamanho eh dividido por dois caso o grafo seja nao direcionado
@@ -1040,19 +1106,34 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
     cout << "listSize: " << listSize << endl;
     cout << "graphEdgesSize: " << graphEdges.size() << endl;
 
+    int contador = 0;
+
     for(int i = 0; i < numberIteration; i++){
     	cout << "i: " << i << " ";
-    	this->auxKruskalAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize);
+    	this->auxKruskalAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize, &contador, solucaoRestritivo);
     }
 
     cout << "Melhor custo de AGM: " << bestCost << endl;
+    cout << "Solucao do Kruskal Restritivo: " << solucaoRestritivo << endl;
+    cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " << 
+                    (double)contador/numberIteration*100 << "% do total de iteracoes" << endl;
+
+
+    // INICIO DO CODIGO PAUSA O RELOGIO
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    
+    //cout << "Result: " << sum << endl;
+    
+    cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
+    // FIM
 
 
     return optimalGraph;
 }
 
 
-void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize)
+void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes)
 {
     /// auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     /// int isVisited[this->getOrder()];
@@ -1110,12 +1191,22 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
         }
     }
 
-    cout << "peso: " << weight << endl;
+    cout << "peso: " << weight;
+
+    if (weight < solKrusRes)
+    {
+        *contador = *contador + 1;
+        cout << " - melhor que KrusRes!";
+    }
 
     if (weight < *bestCost)
     {
     	*bestCost = weight;
     	*optimalGraph = aux;
+        if (*bestCost < solKrusRes)
+        {
+            cout << " - nova melhor solucao!!";
+        }
     }
 
     cout << endl;
