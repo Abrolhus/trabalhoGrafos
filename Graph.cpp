@@ -21,6 +21,7 @@
 #include <vector>
 #include <climits>
 #include <chrono>
+#include "DisjointSetForest.h"
 #define INFINITO 9999;
 
 using namespace std;
@@ -902,13 +903,16 @@ Graph* Graph::kruskal()
 
 Graph* Graph::kruskalRestritivo(int grauRestricao)
 {
-    int isVisited[this->getOrder()];
     auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    int isVisited[this->getOrder()];
 
     for (int i = 0; i < this->getOrder(); i++)
     {
         isVisited[i] = -1;
     }
+    cout << "isVisited: ";
+    for (int i = 0; i < this->getOrder(); i++)
+        cout << isVisited[i] << ", ";
     //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
     int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
     //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
@@ -918,8 +922,10 @@ Graph* Graph::kruskalRestritivo(int grauRestricao)
     int solutionSize = 0;
     Node *p = nullptr;
     int weight = 0;
+    cout << "ListSize: " << listSize << endl;
     for (int i = 0; i < listSize; i++)
     {
+        cout << graphEdges[i].getNodeIdSource() << "->" << graphEdges[i].getNodeIdTarget() << " (" << graphEdges[i].getEdgeWeight() << ")" << endl;
         //insere a aresta no grafo auxiliar
         aux->insertEdge(graphEdges[i].getNodeIdSource(), graphEdges[i].getNodeIdTarget(), graphEdges[i].getEdgeWeight());
 
@@ -1078,7 +1084,7 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
     double sum = 0;
     double add = 1;
     auto begin = std::chrono::high_resolution_clock::now();
-    
+
     int iterations = 1000*1000*1000;
     for (int i=0; i<iterations; i++) {
         sum += add;
@@ -1115,16 +1121,16 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
 
     cout << "Melhor custo de AGM: " << bestCost << endl;
     cout << "Solucao do Kruskal Restritivo: " << solucaoRestritivo << endl;
-    cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " << 
+    cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " <<
                     (double)contador/numberIteration*100 << "% do total de iteracoes" << endl;
 
 
     // INICIO DO CODIGO PAUSA O RELOGIO
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    
+
     //cout << "Result: " << sum << endl;
-    
+
     cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
     // FIM
 
@@ -1460,4 +1466,92 @@ void Graph::escreverEmArquivoTeste(ofstream& output_file){
 
 
     return;
+}
+
+Graph* Graph::kruskal2(){
+    auto begin = std::chrono::high_resolution_clock::now();
+    // auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    // int isVisited[this->getOrder()];
+//
+    // for (int i = 0; i < this->getOrder(); i++)
+    // {
+        // isVisited[i] = -1;
+    // }
+    // cout << "isVisited: ";
+    // for (int i = 0; i < this->getOrder(); i++)
+        // cout << isVisited[i] << ", ";
+//
+    // //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    // int listSize = this->listSortEdges(isVisited, graphEdges);
+    // //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    // //se o grafo se tornou ciclo ou não
+    // Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    // auto edgeSolution = vector<EdgeInfo>(listSize);
+    // int solutionSize = 0;
+    // Node *p = nullptr;
+//
+    // int weight = 0;
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    // cout << "ListSize: " << listSize << endl;
+    // cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+    int weight = 0;
+    for(int i =0; i < listSize; i++){
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            cout << "out of bounds!!!" << endl;
+            return aux;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            cout << "error" << endl;
+            return aux;
+        }
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            continue;
+        }
+
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    cout << "\n\n\nduracao: " << (elapsed.count() * 1e-9)<< endl;
+    cout << "peso: " << weight << endl;
+    // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
+    // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
+    // aux->print();
+    return aux;
+
+
 }

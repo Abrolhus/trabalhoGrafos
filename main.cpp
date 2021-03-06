@@ -174,6 +174,7 @@ int menu(){
     cout << "[13] Kruskal com restricao de grau" << endl;
     cout << "[14] Kruskal aleatorio com restricao de grau" << endl;
     cout << "[15] Kruskal aleatorio" << endl;
+    cout << "[16] Kruskal India" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -187,7 +188,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
     // MOSTRANDO O GRAFO AQUI
     // cout << endl << "Grafo vigente: " << endl;
     // graph->print();
-    // cout << endl;
+    cout << endl;
 
     switch (selecao)
     {
@@ -340,6 +341,13 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             Graph* kruskalAle = graph->kruskalAleatorio();
             //kruskalAle->print();
+            break;
+
+       }
+       case 16:{
+
+            Graph* krusk2 = graph->kruskal2();
+            //krusk2->print();
             break;
 
        }

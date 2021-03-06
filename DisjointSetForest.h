@@ -1,6 +1,7 @@
 #ifndef DISJOINTSETFOREST_H
 #define DISJOINTSETFOREST_H
 #include <iostream>
+#include <vector>
 
 class DisjointSetForest {
 
@@ -10,7 +11,7 @@ class DisjointSetForest {
         void setUnion(int v, int w);
         void print();
     private:
-        int *parents;
+        std::vector<int> parents;
         int size;
 };
 
