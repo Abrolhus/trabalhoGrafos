@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <chrono>
 #include <vector>
+#include "EdgeInfo.h"
 #include "ChainedQueue.h"
 #include "Graph.h"
 #include "Node.h"
@@ -175,6 +176,7 @@ int menu(){
     cout << "[14] Kruskal aleatorio com restricao de grau" << endl;
     cout << "[15] Kruskal aleatorio" << endl;
     cout << "[16] Kruskal India" << endl;
+    cout << "[17] Kruskal teste" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -290,7 +292,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
                 cout << auxLargura[i]  << " ";            
             }
 
-            cout << endl << "É conexo? " << graph->isConnected();
+            // cout << endl << "É conexo? " << graph->isConnected();
 
             break;
         }
@@ -332,17 +334,20 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
        }
 
        case 14:{
-            int grauRestritivo;
-            int numeroIteracoes;
+            // int grauRestritivo;
+            // int numeroIteracoes;
 
-            cout << "Deseja restringir a que grau? " << endl;
-            cin >> grauRestritivo;
+            // cout << "Deseja restringir a que grau? " << endl;
+            // cin >> grauRestritivo;
 
-            cout << "Quantas iteracoes deseja?" << endl;
-            cin >> numeroIteracoes;
+            // cout << "Quantas iteracoes deseja?" << endl;
+            // cin >> numeroIteracoes;
 
-            Graph* kruskalRes = graph->kruskalAleatorioRestritivo(grauRestritivo, numeroIteracoes);
-            //kruskalRes->print();
+            // Graph* kruskalRes = graph->kruskalAleatorioRestritivo(grauRestritivo, numeroIteracoes);
+            // //kruskalRes->print();
+            //Graph *kruskalAleResIndia = graph->kruskalIndiaAleatorioRestritivo(3);
+            //kruskalAleResIndia->print();
+
             break;
 
        }
@@ -358,6 +363,27 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             Graph* krusk2 = graph->kruskal2();
             //krusk2->print();
+            break;
+
+       }
+
+       case 17:{
+
+
+            cout << endl;
+            graph->print();
+            cout << endl << endl;
+            Graph* kruskalFinal = graph->kruskalFinal(3);
+            cout << endl << endl;
+            kruskalFinal->print();
+
+            // vector<EdgeInfo> teste = graph->getNodeEdges(0);
+
+            // for (int i = 0; i < teste.size(); i++)
+            // {
+            //     cout << teste[i].getNodeIdSource() << "->" << teste[i].getNodeIdTarget() << " " << teste[i].getEdgeWeight() << endl;
+            // }
+
             break;
 
        }

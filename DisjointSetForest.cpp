@@ -82,17 +82,20 @@ std::vector<EdgeInfo> DisjointSetForest::getEdgesLeavingSubTree(int q, std::vect
      */
     // auto fathersOfQ = getAllFathersOf(q);
     std::vector<EdgeInfo> validEdges;
+    //std::cout << "Tamanho1: " << edges.size() << std::endl;
     for(auto edge : edges){
         int edgeSource = edge.getNodeIdSource();
         int edgeTarget = edge.getNodeIdTarget();
-        std::cout << "source: " << edgeSource << ", ";
-        std::cout << "target: " << edgeTarget << ", " << std::endl;
+        //std::cout << "source: " << edgeSource << ", ";
+        //std::cout << "target: " << edgeTarget << ", " << std::endl;
         if(this->find(edgeSource) == this->find(edgeTarget)){
+            //std::cout << "Entrou 1if" << std::endl;
             if(this->isDescendantOf(edgeSource, q) != this->isDescendantOf(edgeTarget, q)){ // xor    (true, false) or (false true)
                 validEdges.push_back(edge);
             }
         }
     }
+    //std::cout << "Tamanho: " << validEdges.size() << std::endl;
     return validEdges;
         // int firstCommonFather = getFirstCommonFather(edgeSource, edgeTarget);
         // if(firstCommonFather == -1){

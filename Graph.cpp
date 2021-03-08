@@ -795,6 +795,8 @@ bool Graph::checkContainsId(int id, int nodeList[], int listLength)
     return false;
 }
 
+// ------------------------------------- KRUSKALS ------------------------------------- 
+
 int Graph::listSortEdges(int isVisited[], vector<EdgeInfo>& graphEdges)
 {
     Node *p = first_node;
@@ -1238,6 +1240,500 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
     delete [] edgeSolution;
 }
 
+Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao)
+{
+    cout << "Grafo input é conexo? " << this->isConnected() << endl;
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    // cout << "ListSize: " << listSize << endl;
+    // cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    int weight = 0;
+    int i;
+
+    for(i =0; i < listSize; i++){
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            cout << "out of bounds!!!" << endl;
+            return aux;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            cout << "error" << endl;
+            return aux;
+        }
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+
+    aux->print();
+    forest.print();
+
+    // NESSE PONTO, AGM É CRIADA SEM QUE HAJA RESTRICAO DE GRAU NOS VERTICES
+    cout << "Resultado estourado eh conexo? (tem que ser) " << aux->isConnected() << endl;
+
+    Node *pegaEstourados = nullptr;
+    int qtsEstourados = 0;
+    pegaEstourados = aux->getFirstNode();
+    while (pegaEstourados != nullptr)
+    {
+        if (pegaEstourados->getDegree() > grauRestricao)
+        {
+            cout << "No estourado: " << pegaEstourados->getId() << " grau: " << pegaEstourados->getDegree() << endl;
+            qtsEstourados++;
+        }
+        pegaEstourados = pegaEstourados->getNextNode();
+    }
+    cout << "qtsEstourados? " << qtsEstourados << endl;
+
+    // para todo no da AGM criada, procura pelos estourados
+    Node *p = nullptr;
+    Node *auxNode = nullptr;
+    Edge *e = nullptr;
+    Edge *auxEdge = nullptr;
+    p = aux->getFirstNode();
+
+    vector<EdgeInfo> subTreeEdges;
+
+    int subTreeVertex;
+    int removeId;
+
+    while (p != nullptr)
+    {
+
+        e = p->getFirstEdge();
+        // opa, achou um estourado, repetir o processo ate que ele deixe de ser estourado
+        while (p->getDegree() > grauRestricao)
+        {
+            cout << "No sendo tratado: " << p->getId() << " grau atual: " << p->getDegree() << endl;
+            auxEdge = e->getNextEdge();
+
+            // hora de testar edge por edge se podera ser trocada
+            cout << "Testando edge " << p->getId() << "->" << e->getTargetId() << endl;
+            subTreeVertex = e->getTargetId();
+            subTreeEdges = forest.getEdgesLeavingSubTree(subTreeVertex, remainingEdges);
+
+            cout << "Qual tamanho desse vetor? " << subTreeEdges.size() << endl;
+
+            //printar as edges aqui:
+            // cout << "Possiveis substitutas: " << endl;
+            // for (int i = 0; i < subTreeEdges.size(); i++)
+            // {
+            //     cout << "Edge #" << i << " " << subTreeEdges[i].getNodeIdSource() << "->" << subTreeEdges[i].getNodeIdTarget();
+            // }
+
+
+            for (int i = 0; i < subTreeEdges.size(); i++)
+            {
+                if (aux->getNode(subTreeEdges[i].getNodeIdSource())->getDegree() + 1 <= grauRestricao &&
+                                aux->getNode(subTreeEdges[i].getNodeIdTarget())->getDegree() + 1 <= grauRestricao)
+                {
+                    // encontrou uma possivel substituta, adicione ela e saia fora
+                    aux->insertEdge(subTreeEdges[i].getNodeIdSource(), subTreeEdges[i].getNodeIdTarget(), subTreeEdges[i].getEdgeWeight());
+                    weight += subTreeEdges[i].getEdgeWeight();
+
+                    weight -= e->getWeight();
+
+                    removeId = e->getTargetId();
+                    auxNode = aux->getNode(removeId);
+                    p->removeEdge(removeId, aux->getDirected(), auxNode);
+                    p->decrementDegree();
+
+                    auxNode->removeEdge(p->getId(), aux->getDirected(), p);
+                    auxNode->decrementDegree();
+
+                    break;
+                }
+            }
+            // com a nova edge adicionada, devemos remover a que estourava o vertece
+            // cout << "E ciclo? (tem que ser): " << aux->isCyclicUtil() << endl;
+            // agora devemos remover a Edge:
+
+            // weight -= e->getWeight();
+
+            // auxNode = aux->getNode(e->getTargetId());
+            // p->removeEdge(e->getTargetId(), aux->getDirected(), auxNode);
+
+            // auxNode->removeEdge(p->getId(), aux->getDirected(), p);
+
+            // cout << "E ciclo? (nao pode ser): " << aux->isCyclicUtil() << endl;
+
+            e = auxEdge;
+            if (e == nullptr)
+            {
+                break;
+            }
+        }
+
+
+        p = p->getNextNode();
+    }
+
+    cout << "Eh conexo? (tem que ser) " << aux->isConnected() << endl;
+    cout << endl << "Peso:   " << weight << endl;
+
+    return aux;
+}
+
+Graph* Graph::kruskal2(){
+    auto begin = std::chrono::high_resolution_clock::now();
+    // auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    // int isVisited[this->getOrder()];
+//
+    // for (int i = 0; i < this->getOrder(); i++)
+    // {
+        // isVisited[i] = -1;
+    // }
+    // cout << "isVisited: ";
+    // for (int i = 0; i < this->getOrder(); i++)
+        // cout << isVisited[i] << ", ";
+//
+    // //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    // int listSize = this->listSortEdges(isVisited, graphEdges);
+    // //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    // //se o grafo se tornou ciclo ou não
+    // Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    // auto edgeSolution = vector<EdgeInfo>(listSize);
+    // int solutionSize = 0;
+    // Node *p = nullptr;
+//
+    // int weight = 0;
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    // cout << "ListSize: " << listSize << endl;
+    // cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+    int weight = 0;
+    int i;
+    for(i =0; i < listSize; i++){
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            cout << "out of bounds!!!" << endl;
+            return aux;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            cout << "error" << endl;
+            return aux;
+        }
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+    int q = 33;
+    auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
+    forest.print();
+    for(auto edge : edgesLeavingQtree){
+        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
+    }
+    cout << endl;
+    EdgeInfo chosenEdge = edgesLeavingQtree[3];
+    int commonFather = forest.getFirstCommonFather(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget());
+    vector<EdgeInfo> cicleEdges = forest.caminhoReuniaoFamiliar(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget(), commonFather);
+    cout << endl;
+    cout << endl;
+    std::cout << "first Common Father between " << chosenEdge.getNodeIdSource() << " and " << chosenEdge.getNodeIdTarget() << ": " << commonFather << endl;
+    cout <<"caminho ate o pai em comum: (ciclo sem a aresta " << chosenEdge.getNodeIdSource() << "->" << chosenEdge.getNodeIdTarget() << ")" <<endl;
+    for(auto edge : cicleEdges){
+        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << "(" << edge.getEdgeWeight() << ")" << ",  " << endl;
+    }
+
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    cout << "\n\n\nduracao: " << (elapsed.count() * 1e-9)<< endl;
+    cout << "peso: " << weight << endl;
+    // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
+    // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
+    // aux->print();
+    return aux;
+
+
+}
+
+vector<EdgeInfo> Graph::getNodeEdges(int nodeId)
+{
+    Node *p = nullptr;
+    Edge *e = nullptr;
+
+    // int size = 0;
+    // int index = 0;
+
+    // p = this->getNode();
+    // e = p->getFirstEdge();
+
+    // while (e != nullptr)
+    // {
+    //     size++;
+    //     e = e->getNextEdge();
+    // }
+
+    vector<EdgeInfo> nodeEdges;
+
+    p = this->getFirstNode();
+    e = p->getFirstEdge();
+
+    EdgeInfo edge;
+
+    while (e != nullptr)
+    {
+        edge.setNodeIdSource(p->getId());
+        edge.setNodeIdTarget(e->getTargetId());
+        edge.setEdgeWeight(e->getWeight());
+        nodeEdges.push_back(edge);
+        e = e->getNextEdge();
+    }
+
+    return nodeEdges;
+}
+
+
+Graph* Graph::kruskalFinal(int grauRestricao)
+{
+    cout << "Grafo input é conexo? " << this->isConnected() << endl;
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    // cout << "ListSize: " << listSize << endl;
+    // cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    int weight = 0;
+    int i;
+
+    for(i =0; i < listSize; i++){
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            cout << "out of bounds!!!" << endl;
+            return aux;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            cout << "error" << endl;
+            return aux;
+        }
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+    forest.print();
+
+    // NESSE PONTO, AGM É CRIADA SEM QUE HAJA RESTRICAO DE GRAU NOS VERTICES
+    cout << "Resultado estourado eh conexo? (tem que ser) " << aux->isConnected() << endl;
+
+    Node *pegaEstourados = nullptr;
+    int qtsEstourados = 0;
+    pegaEstourados = aux->getFirstNode();
+    while (pegaEstourados != nullptr)
+    {
+        if (pegaEstourados->getDegree() > grauRestricao)
+        {
+            cout << "No estourado: " << pegaEstourados->getId() << " grau: " << pegaEstourados->getDegree() << endl;
+            qtsEstourados++;
+        }
+        pegaEstourados = pegaEstourados->getNextNode();
+    }
+    cout << "qtsEstourados? " << qtsEstourados << endl;
+
+
+    Node *p = aux->getFirstNode();
+    Node *auxNode = nullptr;
+
+    bool achouSub = false;
+
+    vector<EdgeInfo> nodeEdges;
+    int counter = 0;
+
+    while (p != nullptr)
+    {
+        nodeEdges = aux->getNodeEdges(p->getId());
+        cout << "Coletou arestas do vertice!" << endl;
+        cout << "Tamanho do vetor de arestas: " << nodeEdges.size() << endl;
+
+        while (p->getDegree() > grauRestricao)
+        {
+            cout << "Vertice tratado: " << p->getId() << " GRAU: " << p->getDegree() << endl;
+
+            achouSub = false;
+
+            //----- REMOCAO DA ARESTA -----
+
+            //ponteiro aponta pra no de saida e remove a aresta
+            auxNode = aux->getNode(nodeEdges[counter].getNodeIdSource());
+            auxNode->removeEdge(nodeEdges[counter].getNodeIdTarget(), aux->getDirected(), aux->getNode(nodeEdges[counter].getNodeIdTarget()));
+
+            //ponteiro aponta para no de chegada e remove a aresta
+            auxNode = aux->getNode(graphEdges[counter].getNodeIdTarget());
+            auxNode->removeEdge(nodeEdges[counter].getNodeIdSource(), aux->getDirected(), aux->getNode(nodeEdges[counter].getNodeIdSource()));
+            cout << "Removeu aresta " << nodeEdges[counter].getNodeIdSource() << "->" << nodeEdges[counter].getNodeIdTarget() << endl;
+
+            weight -= nodeEdges[counter].getEdgeWeight();
+
+
+            //----- PROCURA POR SUBSTITUTA -----
+            cout << "PROCURANO ARESTA SUBSTITUTA" << endl;
+            for (int i = 0; i < remainingEdges.size(); i++)
+            {
+                //coloca aresta
+                aux->insertEdge(remainingEdges[i].getNodeIdSource(), remainingEdges[i].getNodeIdTarget(), remainingEdges[i].getEdgeWeight());
+                cout << "Aresta " << remainingEdges[i].getNodeIdSource() << "->" << remainingEdges[i].getNodeIdTarget() << " inserida!" << endl;
+
+                cout << "Foi boa?" << endl;
+
+                //confere se aresta é substituta
+                if (!aux->isCyclicUtil() && aux->getNode(remainingEdges[i].getNodeIdSource())->getDegree() < grauRestricao
+                                        && aux->getNode(remainingEdges[i].getNodeIdTarget())->getDegree() < grauRestricao)
+                {
+                    // aresta é possivel substituta
+                    weight += remainingEdges[i].getEdgeWeight();
+                    remainingEdges.erase(remainingEdges.begin() + i);
+                    cout << "Sim!" << endl;
+                    achouSub = true;
+                    // nao precisa testar as outras
+                    break;
+                }
+                else
+                {
+                    //aresta não é possivel substituta ----- REMOCAO DA ARESTA QUE ACABOU DE SER ADICIONADA -----
+
+                    //ponteiro aponta pra no de saida e remove a aresta
+                    auxNode = aux->getNode(remainingEdges[i].getNodeIdSource());
+                    auxNode->removeEdge(remainingEdges[i].getNodeIdTarget(), aux->getDirected(), aux->getNode(remainingEdges[i].getNodeIdTarget()));
+
+                    //ponteiro aponta para no de chegada e remove a aresta
+                    auxNode = aux->getNode(remainingEdges[i].getNodeIdTarget());
+                    auxNode->removeEdge(remainingEdges[i].getNodeIdSource(), aux->getDirected(), aux->getNode(remainingEdges[i].getNodeIdSource()));
+                    cout << "Nao" << endl;
+                    cout << "Aresta " << remainingEdges[i].getNodeIdSource() << "->" << remainingEdges[i].getNodeIdTarget() << " removida!" << endl;
+                }
+
+            }
+
+            //----- REINSERCAO DA ARESTA JA QUE ELA EH INSUBSTITUIVEL (ou nao) -----
+
+            if (!achouSub)
+            {
+                aux->insertEdge(nodeEdges[counter].getNodeIdSource(), nodeEdges[counter].getNodeIdTarget(), nodeEdges[counter].getEdgeWeight());
+                cout << "Aresta " << nodeEdges[counter].getNodeIdSource() << "->" << nodeEdges[counter].getNodeIdTarget() << " eh insubstituivel e foi readicionado" << endl;;
+            }
+
+            // passa pra proxima aresta do vertice estourado:
+            cout << "Mudando de aresta #" << counter;
+            counter++;
+            cout << " para aresta #" << counter << endl;
+            cout << "Tamanho do vetor de arestas: " << nodeEdges.size() << endl;
+
+            if(counter >= nodeEdges.size())
+            {
+                //NAO TEM SOLUCAO
+                cout << "Ops, n tem solucao" << endl;
+                break;
+            }
+        }
+
+        p = p->getNextNode();
+        counter = 0;
+    }
+
+
+
+    return aux;
+}
+
+
+// ------------------------------------- FIM DOS KRUSKALS ------------------------------------- 
 
 bool Graph::isCyclicUtil()
 {
@@ -1289,6 +1785,7 @@ Graph* Graph::dcMST(int d, int interactions){
     }
     return mst;
 }
+
 Graph* Graph::dcMSTInteraction(float *minEdgeWeight, float *maxEdgeWeight, vector<EdgeInfo> graphEdges, int listSize, int isVisited[], vector<EdgeInfo>& solutionEdges){
     Graph *mst = new Graph(this->getOrder(), this->getDirected(),
                            this->getWeightedEdge(), this->getWeightedNode());
@@ -1430,10 +1927,10 @@ void Graph::print(){
     cout << "Ordem: " << this->getOrder() << endl;
     Node* p = first_node;
     while(p != nullptr){
-        cout << p->getId() +1 << ": ";
+        cout << p->getId() << ": ";
         Edge* e = p->getFirstEdge();
         while(e != nullptr){
-            cout << "->" << e->getTargetId()+1 << " ";
+            cout << "->" << e->getTargetId() << " ";
             e = e->getNextEdge();
         }
         cout << "\t GRAU: " << p->getDegree() << endl;
@@ -1484,113 +1981,4 @@ void Graph::escreverEmArquivoTeste(ofstream& output_file){
 
 
     return;
-}
-
-Graph* Graph::kruskal2(){
-    auto begin = std::chrono::high_resolution_clock::now();
-    // auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
-    // int isVisited[this->getOrder()];
-//
-    // for (int i = 0; i < this->getOrder(); i++)
-    // {
-        // isVisited[i] = -1;
-    // }
-    // cout << "isVisited: ";
-    // for (int i = 0; i < this->getOrder(); i++)
-        // cout << isVisited[i] << ", ";
-//
-    // //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
-    // int listSize = this->listSortEdges(isVisited, graphEdges);
-    // //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
-    // //se o grafo se tornou ciclo ou não
-    // Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
-    // auto edgeSolution = vector<EdgeInfo>(listSize);
-    // int solutionSize = 0;
-    // Node *p = nullptr;
-//
-    // int weight = 0;
-    DisjointSetForest forest(this->getOrder());
-    // // [ -1, -1, -1, ..., -1]
-    // bool solution = false;
-    int sourceParent, targetParent;
-    EdgeInfo edge;
-    // cout << "ListSize: " << listSize << endl;
-    // cout << "graphEdgesSize: " << graphEdges.size() << endl;
-    // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
-    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
-    auto remainingEdges = vector<EdgeInfo>();
-    int isVisited[this->getOrder()];
-
-    for (int i = 0; i < this->getOrder(); i++)
-    {
-        isVisited[i] = -1;
-    }
-    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
-    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
-    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
-    //se o grafo se tornou ciclo ou não
-    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
-    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
-    int solutionSize = 0;
-    Node *p = nullptr;
-    int weight = 0;
-    int i;
-    for(i =0; i < listSize; i++){
-        edge = graphEdges[i];
-        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
-        sourceParent = forest.find(edge.getNodeIdSource()); // -1
-        targetParent = forest.find(edge.getNodeIdTarget()); // -1
-        if(sourceParent == -1 || targetParent == -1){
-            cout << "out of bounds!!!" << endl;
-            return aux;
-        }
-        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
-            cout << "error" << endl;
-            return aux;
-        }
-        // cout << "i: "
-            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
-            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
-
-        if(sourceParent != targetParent){
-            forest.setUnion(sourceParent, targetParent);
-            // edgeSolution.push_back(edge);
-            weight += edge.getEdgeWeight();
-            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
-        }
-        else {
-            remainingEdges.push_back(edge);
-            continue;
-        }
-
-    }
-    int q = 33;
-    auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
-    forest.print();
-    for(auto edge : edgesLeavingQtree){
-        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
-    }
-    cout << endl;
-    EdgeInfo chosenEdge = edgesLeavingQtree[3];
-    int commonFather = forest.getFirstCommonFather(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget());
-    vector<EdgeInfo> cicleEdges = forest.caminhoReuniaoFamiliar(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget(), commonFather);
-    cout << endl;
-    cout << endl;
-    std::cout << "first Common Father between " << chosenEdge.getNodeIdSource() << " and " << chosenEdge.getNodeIdTarget() << ": " << commonFather << endl;
-    cout <<"caminho ate o pai em comum: (ciclo sem a aresta " << chosenEdge.getNodeIdSource() << "->" << chosenEdge.getNodeIdTarget() << ")" <<endl;
-    for(auto edge : cicleEdges){
-        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << "(" << edge.getEdgeWeight() << ")" << ",  " << endl;
-    }
-
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    cout << "\n\n\nduracao: " << (elapsed.count() * 1e-9)<< endl;
-    cout << "peso: " << weight << endl;
-    // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
-    // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
-    // aux->print();
-    return aux;
-
-
 }

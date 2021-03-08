@@ -68,6 +68,8 @@ class Graph{
         void auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, std::vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes);
         Graph* kruskalAleatorioRestritivo(int grauRestricao, int numberIteration);
         Graph* kruskal2();
+        Graph* kruskalIndiaAleatorioRestritivo(int grauRestricao);
+        Graph* kruskalFinal(int grauRestricao);
 
         //methods phase1
         float greed();
@@ -77,6 +79,7 @@ class Graph{
         float greedRactiveRandom();
         void print();
         bool isConnected();
+        vector<EdgeInfo> getNodeEdges(int nodeId);
 
         bool checkContainsId(int id, int nodeList[], int listLength);
     private:
