@@ -1564,12 +1564,24 @@ Graph* Graph::kruskal2(){
         }
 
     }
-    int q = 5;
+    int q = 33;
     auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
     forest.print();
     for(auto edge : edgesLeavingQtree){
         cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
     }
+    cout << endl;
+    EdgeInfo chosenEdge = edgesLeavingQtree[3];
+    int commonFather = forest.getFirstCommonFather(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget());
+    vector<EdgeInfo> cicleEdges = forest.caminhoReuniaoFamiliar(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget(), commonFather);
+    cout << endl;
+    cout << endl;
+    std::cout << "first Common Father between " << chosenEdge.getNodeIdSource() << " and " << chosenEdge.getNodeIdTarget() << ": " << commonFather << endl;
+    cout <<"caminho ate o pai em comum: (ciclo sem a aresta " << chosenEdge.getNodeIdSource() << "->" << chosenEdge.getNodeIdTarget() << ")" <<endl;
+    for(auto edge : cicleEdges){
+        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << "(" << edge.getEdgeWeight() << ")" << ",  " << endl;
+    }
+
 
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);

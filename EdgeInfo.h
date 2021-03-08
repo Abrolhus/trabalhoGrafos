@@ -9,8 +9,13 @@ public:
 	EdgeInfo() { nodeIdSource = MAX
 				 nodeIdTarget = MAX
 				 edgeWeight = MAX; };
+	EdgeInfo(int source, int target, int weight){
+		nodeIdSource = source;
+		nodeIdTarget = target;
+		edgeWeight = weight;
+	}
 	~EdgeInfo() { };
-	
+
 	//getters
 	int getNodeIdSource() { return nodeIdSource; };
 	int getNodeIdTarget() { return nodeIdTarget; };
