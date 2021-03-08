@@ -382,17 +382,29 @@ bool Graph::isCyclicDirected()
 
 //Function that prints a set of edges belongs breadth tree
 
-
-void Graph::breadthFirstSearch(int idFirstNode){
-    int cont = 1;
+bool Graph::isConnected()
+{
     int ordem[this->getOrder()];
-    Node *p = this->getNode(idFirstNode - 1);
+    this->breadthFirstSearch(0, ordem);
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        if (ordem[i] == -1)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void Graph::breadthFirstSearch(int idFirstNode, int ordem[]){
+    int cont = 1;
+    Node *p = this->getNode(idFirstNode);
     Edge *e = nullptr;
     ChainedQueue *fila = new ChainedQueue();
 
     for (int i = 0; i < this->getOrder(); i++)
     {
-        ordem[i] = 0;
+        ordem[i] = -1;
     }
 
     fila->queueUp(p->getId());
@@ -404,7 +416,7 @@ void Graph::breadthFirstSearch(int idFirstNode){
         e = p->getFirstEdge();
         while (e != nullptr)
         {
-            if(ordem[e->getTargetId()] == 0)
+            if(ordem[e->getTargetId()] == -1)
             {
                 ordem[e->getTargetId()] = cont++;
                 fila->queueUp(e->getTargetId());
@@ -413,20 +425,26 @@ void Graph::breadthFirstSearch(int idFirstNode){
         }
     }
 
+    // int aux[this->getOrder()];
+    // cout << endl;
+    // for (int i = 0; i < this->getOrder(); i++)
+    // {
+    //     cout << ordem[i]  << " ";
+    //     aux[ordem[i] - 1] = i;
 
-    int aux[this->getOrder()];
-    cout << endl;
-    for (int i = 0; i < this->getOrder(); i++)
-    {
-        aux[ordem[i] - 1] = i + 1;
-    }
+    //     if (ordem[i] == -1)
+    //     {
+    //         isConnected = false;
+    //     }
+    // }
 
-    cout << "Ordem de descoberta: ";
-    for (int i = 0; i < this->getOrder(); i++)
-    {
-        cout << aux[i]  << " ";
-    }
+    // cout << "Ordem de descoberta: ";
+    // for (int i = 0; i < this->getOrder(); i++)
+    // {
+    //     cout << aux[i]  << " ";
+    // }
 
+    // return isConnected;
 }
 
 

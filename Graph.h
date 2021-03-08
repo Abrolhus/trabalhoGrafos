@@ -52,7 +52,7 @@ class Graph{
 
         //methods phase1
         void topologicalSorting();
-        void breadthFirstSearch(int idFirstNode);
+        void breadthFirstSearch(int idFirstNode, int ordem[]);
         Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
@@ -76,6 +76,7 @@ class Graph{
         float greedRandom();
         float greedRactiveRandom();
         void print();
+        bool isConnected();
 
         bool checkContainsId(int id, int nodeList[], int listLength);
     private:
