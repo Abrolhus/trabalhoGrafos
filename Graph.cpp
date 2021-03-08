@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include <queue>
 #include <algorithm>
 #include <stdlib.h>
 #include "Node.h"
@@ -1546,23 +1547,24 @@ Graph* Graph::kruskal2(){
         }
 
     }
-    int q = 33;
-    auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
-    forest.print();
-    for(auto edge : edgesLeavingQtree){
-        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
-    }
-    cout << endl;
-    EdgeInfo chosenEdge = edgesLeavingQtree[3];
-    int commonFather = forest.getFirstCommonFather(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget());
-    vector<EdgeInfo> cicleEdges = forest.caminhoReuniaoFamiliar(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget(), commonFather);
-    cout << endl;
-    cout << endl;
-    std::cout << "first Common Father between " << chosenEdge.getNodeIdSource() << " and " << chosenEdge.getNodeIdTarget() << ": " << commonFather << endl;
-    cout <<"caminho ate o pai em comum: (ciclo sem a aresta " << chosenEdge.getNodeIdSource() << "->" << chosenEdge.getNodeIdTarget() << ")" <<endl;
-    for(auto edge : cicleEdges){
-        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << "(" << edge.getEdgeWeight() << ")" << ",  " << endl;
-    }
+    // int q = 33;
+    // auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
+    // forest.print();
+    // for(auto edge : edgesLeavingQtree){
+        // cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
+    // }
+    // cout << endl;
+    // EdgeInfo chosenEdge = edgesLeavingQtree[3];
+    // int commonFather = forest.getFirstCommonFather(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget());
+    // vector<EdgeInfo> cicleEdges = forest.caminhoReuniaoFamiliar(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget(), commonFather);
+    // cout << endl;
+    // cout << endl;
+    // std::cout << "first Common Father between " << chosenEdge.getNodeIdSource() << " and " << chosenEdge.getNodeIdTarget() << ": " << commonFather << endl;
+    // cout <<"caminho ate o pai em comum: (ciclo sem a aresta " << chosenEdge.getNodeIdSource() << "->" << chosenEdge.getNodeIdTarget() << ")" <<endl;
+    // for(auto edge : cicleEdges){
+        // cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << "(" << edge.getEdgeWeight() << ")" << ",  " << endl;
+    // }
+//
 
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -1571,8 +1573,62 @@ Graph* Graph::kruskal2(){
     cout << "peso: " << weight << endl;
     // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
     // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
-    // aux->print();
+    aux->print();
+    // q = 33;
+    auto sonsOfQ = aux->getSonsOf(33, 25);
+    cout << "filhos do 34:" << endl;
+    for(int i= 0; i < sonsOfQ.size(); i++){
+        cout << i+1 << ": " << (int)sonsOfQ.at(i) << ", ";
+    }
     return aux;
 
 
 }
+
+vector<bool> Graph::getSonsOf(int father, int root){
+    int cont = 1;
+    Node *p = this->getNode(root);
+    Edge *e = nullptr;
+    // ChainedQueue *fila = new ChainedQueue();
+    vector<bool> isSonOfQ(this->getOrder(), 0); // O(n)
+    vector<bool> wasVisited(this->getOrder(), 0); // O(n)
+    std::queue<Node*> fila;
+    Node* pai;
+
+    fila.push(this->getNode(root));
+    wasVisited.at(root) = true;
+    while(!fila.empty()){
+        if(fila.front()->getId() == father){
+            pai = fila.front();
+            break;
+        }
+        auto edge = fila.front()->getFirstEdge();
+        while(edge != nullptr){
+            auto targetId = edge->getTargetId();
+            if(!wasVisited.at(targetId)){
+                wasVisited.at(targetId) = true;
+                fila.push(this->getNode(targetId));
+            }
+            edge = edge->getNextEdge();
+        }
+        fila.pop();
+    }
+    std::queue<Node*> filaDoPai;
+    fila.push(pai);
+    while(!fila.empty()){
+        auto edge = fila.front()->getFirstEdge();
+        while(edge != nullptr){
+            auto targetId = edge->getTargetId();
+            if(!wasVisited.at(targetId)){
+                isSonOfQ.at(targetId) = true;
+                wasVisited.at(targetId) = true;
+                fila.push(this->getNode(targetId));
+            }
+            edge = edge->getNextEdge();
+        }
+        fila.pop();
+    }
+
+    return isSonOfQ;
+}
+

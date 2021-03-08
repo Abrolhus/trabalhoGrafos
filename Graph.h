@@ -89,6 +89,9 @@ class Graph{
         bool isCyclicDirected();
         bool auxIsCyclicDirected(int nodeId, bool isVisited[], bool *isContainedRecusirve);
         bool isCyclicUtil();
+        vector<bool> getSonsOf(int father, int idFirstNode);
+
+
 
 };
 
