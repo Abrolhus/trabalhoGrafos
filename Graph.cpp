@@ -1500,6 +1500,7 @@ Graph* Graph::kruskal2(){
     // cout << "graphEdgesSize: " << graphEdges.size() << endl;
     // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
     auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
     int isVisited[this->getOrder()];
 
     for (int i = 0; i < this->getOrder(); i++)
@@ -1515,7 +1516,8 @@ Graph* Graph::kruskal2(){
     int solutionSize = 0;
     Node *p = nullptr;
     int weight = 0;
-    for(int i =0; i < listSize; i++){
+    int i;
+    for(i =0; i < listSize; i++){
         edge = graphEdges[i];
         // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
         sourceParent = forest.find(edge.getNodeIdSource()); // -1
@@ -1539,9 +1541,16 @@ Graph* Graph::kruskal2(){
             aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
         }
         else {
+            remainingEdges.push_back(edge);
             continue;
         }
 
+    }
+    int q = 5;
+    auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
+    forest.print();
+    for(auto edge : edgesLeavingQtree){
+        cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
     }
 
     auto end = std::chrono::high_resolution_clock::now();
