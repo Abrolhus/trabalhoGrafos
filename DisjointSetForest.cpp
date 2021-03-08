@@ -54,7 +54,7 @@ void DisjointSetForest::print(){
         std::cout<< ". Paizao: " << this->find(i) << std::endl;
     }
 }
-bool DisjointSetForest::isSomewhatSonOf(int v, int q){
+bool DisjointSetForest::isDescendantOf(int v, int q){
 /* checks if n is in Q`s "tree"
  */
     if(v >= this->size){
@@ -88,7 +88,7 @@ std::vector<EdgeInfo> DisjointSetForest::getEdgesLeavingSubTree(int q, std::vect
         std::cout << "source: " << edgeSource << ", ";
         std::cout << "target: " << edgeTarget << ", " << std::endl;
         if(this->find(edgeSource) == this->find(edgeTarget)){
-            if(this->isSomewhatSonOf(edgeSource, q) != this->isSomewhatSonOf(edgeTarget, q)){ // xor    (true, false) or (false true)
+            if(this->isDescendantOf(edgeSource, q) != this->isDescendantOf(edgeTarget, q)){ // xor    (true, false) or (false true)
                 validEdges.push_back(edge);
             }
         }
@@ -127,23 +127,30 @@ std::vector<int> DisjointSetForest::getAllFathersOf(int v){
 int DisjointSetForest::getFirstCommonFather(int q, int v){
   // faster if Q is 'higher than v'
     std::vector<int> fathersOfQ = this->getAllFathersOf(q);
-    for(int i = fathersOfQ.size() - 1; i >= 0; i--){
+    for(int i = fathersOfQ.size() - 1; i >= 0; i--){ // se v for pai de q
+        std::cout << "`" << fathersOfQ.at(i);
         if(fathersOfQ.at(i) == v){
             return v;
         }
     }
     int parent = this->parents[v];
+    std::cout << v << ": ";
     // std::cout << "parents:";
     // std::cout << parent << ", ";
     int parentIndex = -1;
     // return parent;
     while(parent >= 0){
         parentIndex = parent; // 2
-        for(int i = fathersOfQ.size() - 1; i >= 0; i--){
+        std::cout << parent << ", ";
+        if(parentIndex == q){ // se q for pai de v
+            return q;
+        }
+        // for(int i = fathersOfQ.size() - 1; i >= 0; i--){ // procurando primeiro pai em comum
+        for(int i = 0; i < fathersOfQ.size(); i++){ // procurando primeiro pai em comum
             if(fathersOfQ.at(i) == parentIndex){
                 return parentIndex;
             }
-        parent = this->parents[parent]; // -1
+        parent = this->parents[parentIndex]; // -1
         }
     }
     if(parentIndex < 0){
@@ -179,3 +186,30 @@ void DisjointSetForest::printAllFathersOf(int v){
     std::cout<< "}";
 
 }
+std::vector<EdgeInfo> DisjointSetForest::caminhoReuniaoFamiliar(int v, int w, int firstCommonFather){
+    int vParent = v;
+    int wParent = w;
+    int prevNode = v;
+    int parentIndex = -1;
+    std::vector<EdgeInfo> edges;
+    // return parent;
+    //
+    std::cout << "{";
+    while (vParent >= 0 && vParent != firstCommonFather) {
+        vParent = this->parents[vParent]; // -1
+        edges.push_back(EdgeInfo(prevNode, vParent, 10000));
+        prevNode = vParent;
+  }
+  prevNode = w;
+    while (wParent >= 0 && wParent != firstCommonFather) {
+        std::cout << wParent << "";
+        wParent = this->parents[wParent]; // -1
+        edges.push_back(EdgeInfo(prevNode, wParent, 10000));
+        prevNode = wParent;
+  }
+  return edges;
+
+}
+
+
+
