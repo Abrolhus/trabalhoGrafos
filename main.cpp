@@ -383,7 +383,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cin >> numeroIteracoes;
 
             Graph* kruskalRes = graph->kruskalIndiaAleatorioRestritivo(grauRestritivo, numeroIteracoes);
-            kruskalRes->print();
+            // kruskalRes->print();
             break;
 
        }
