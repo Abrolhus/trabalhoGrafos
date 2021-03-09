@@ -1810,3 +1810,97 @@ int Graph::getFatherOf(int node, int root){
     return -1;
 }
 
+Graph* Graph::kruskalIndiaRestritivo(){
+    auto begin = std::chrono::high_resolution_clock::now();
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    // cout << "ListSize: " << listSize << endl;
+    // cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+    int weight = 0;
+    int i;
+    for(i =0; i < listSize; i++){
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            cout << "out of bounds!!!" << endl;
+            return aux;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            cout << "error" << endl;
+            return aux;
+        }
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+    // int q = 33;
+    // auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
+    // forest.print();
+    // for(auto edge : edgesLeavingQtree){
+        // cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
+    // }
+    // cout << endl;
+    // EdgeInfo chosenEdge = edgesLeavingQtree[3];
+    // int commonFather = forest.getFirstCommonFather(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget());
+    // vector<EdgeInfo> cicleEdges = forest.caminhoReuniaoFamiliar(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget(), commonFather);
+    // cout << endl;
+    // cout << endl;
+    // std::cout << "first Common Father between " << chosenEdge.getNodeIdSource() << " and " << chosenEdge.getNodeIdTarget() << ": " << commonFather << endl;
+    // cout <<"caminho ate o pai em comum: (ciclo sem a aresta " << chosenEdge.getNodeIdSource() << "->" << chosenEdge.getNodeIdTarget() << ")" <<endl;
+    // for(auto edge : cicleEdges){
+        // cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << "(" << edge.getEdgeWeight() << ")" << ",  " << endl;
+    // }
+//
+
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    cout << "\n\n\nduracao: " << (elapsed.count() * 1e-9)<< endl;
+    cout << "peso: " << weight << endl;
+    // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
+    // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
+    aux->print();
+    // q = 33;
+    auto sonsOfQ = aux->getSonsOf(33, 25);
+    cout << "filhos do 34:" << endl;
+    for(int i= 0; i < sonsOfQ.size(); i++){
+        cout << i+1 << ": " << (int)sonsOfQ.at(i) << ", ";
+    }
+    return aux;
+
+
+}
