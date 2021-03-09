@@ -287,7 +287,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             for (int i = 0; i < graph->getOrder(); i++)
             {
                 auxLargura[ordemLargura[i] - 1] = i;
-                cout << auxLargura[i]  << " ";            
+                cout << auxLargura[i]  << " ";
             }
 
             cout << endl << "É conexo? " << graph->isConnected();
@@ -356,8 +356,9 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
        }
        case 16:{
 
-            Graph* krusk2 = graph->kruskal2();
-            //krusk2->print();
+            // Graph* krusk2 = graph->kruskal2();
+            Graph* krusk3 = graph->kruskal3(3);
+            krusk3->print();
             break;
 
        }

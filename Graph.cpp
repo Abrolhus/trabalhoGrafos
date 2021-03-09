@@ -1650,3 +1650,108 @@ vector<bool> Graph::getSonsOf(int father, int root){
     return isSonOfQ;
 }
 
+Graph* Graph::kruskal3(int grauRestricao){
+cout << "Grafo input é conexo? " << this->isConnected() << endl;
+    DisjointSetForest forest(this->getOrder());
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    int weight = 0;
+    int i;
+
+    for(i =0; i < listSize; i++){
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            cout << "out of bounds!!!" << endl;
+            return aux;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            cout << "error" << endl;
+            return aux;
+        }
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+    forest.print();
+    this->print();
+    aux->print();
+    // NESSE PONTO, AGM É CRIADA SEM QUE HAJA RESTRICAO DE GRAU NOS VERTICES
+    cout << "Resultado estourado eh conexo? (tem que ser) " << aux->isConnected() << endl;
+    vector<Node*> verticesEstourados;
+    Node* pegaEstourados = aux->getFirstNode();
+    while (pegaEstourados != nullptr)
+    {
+        if (pegaEstourados->getDegree() > grauRestricao)
+        {
+            cout << "No estourado: " << pegaEstourados->getId() << " grau: " << pegaEstourados->getDegree() << endl;
+            verticesEstourados.push_back(pegaEstourados);
+        }
+        pegaEstourados = pegaEstourados->getNextNode();
+    }
+    cout << "qtsEstourados? " << verticesEstourados.size() << endl;
+
+    for(Node* verticeEstourado : verticesEstourados){
+        cout << "Vertice tratado: " << verticeEstourado->getId() << " GRAU: " << verticeEstourado->getDegree() << endl;
+        Edge* edge = verticeEstourado->getFirstEdge();
+        Edge* nextEdge;
+        while(edge != nullptr && verticeEstourado->getDegree() > grauRestricao){
+            nextEdge = edge->getNextEdge();
+            cout << "nextEdge:" << nextEdge->getTargetId() << endl;
+            cout << edge->getTargetId() << endl;
+            if(edge->getTargetId() == verticeEstourado->getId()){
+                std::cout << "igual" << endl;
+                edge = edge->getNextEdge();
+                continue;
+            }
+            vector<bool> isSonOfTarget = this->getSonsOf(edge->getTargetId(), 25);  // TODO: tira esse 25
+            for (auto it = remainingEdges.begin(); it < remainingEdges.end(); it++){
+                if (isSonOfTarget.at(it->getNodeIdSource()) != isSonOfTarget.at(it->getNodeIdTarget())) {
+                    // if a aresta sai ou entra na subarvore de 'target'
+                    aux->insertEdge(it->getNodeIdSource(), it->getNodeIdTarget(), it->getEdgeWeight());
+                    cout << "inserindo: " << it->getNodeIdSource()<< "->" << it->getNodeIdTarget()<< " (" << it->getEdgeWeight() << endl;
+                    int targetId = edge->getTargetId();
+                    cout << nextEdge->getTargetId() << endl;
+                    verticeEstourado->removeEdge(targetId, aux->getDirected(), aux->getNode(edge->getTargetId()));
+                    cout << "removendo: " << targetId << "-> " << verticeEstourado->getId() << "()" << endl;
+                    aux->getNode(targetId)->removeEdge(verticeEstourado->getId(), aux->getDirected(), verticeEstourado);
+                    cout << "removed" << endl;
+                    remainingEdges.erase(it);
+                    cout << "erased" << endl;
+                    break;
+                }
+            }
+            cout << nextEdge->getTargetId()<< endl;
+            edge = nextEdge;
+        }
+    }
+    return aux;
+}
+

@@ -68,6 +68,7 @@ class Graph{
         void auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, std::vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes);
         Graph* kruskalAleatorioRestritivo(int grauRestricao, int numberIteration);
         Graph* kruskal2();
+        Graph* kruskal3(int grauRestricao);
 
         //methods phase1
         float greed();
