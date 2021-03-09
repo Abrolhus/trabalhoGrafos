@@ -1178,7 +1178,7 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
     EdgeInfo *edgeSolution = new EdgeInfo[listSize];
     int solutionSize = 0;
     Node *p = nullptr;
-    float alpha = 0.001f;
+    float alpha = 0.01f;
     double weight = 0;
 
     //cout << "nums: " << endl;
@@ -1810,7 +1810,7 @@ int Graph::getFatherOf(int node, int root){
     return -1;
 }
 
-Graph* Graph::kruskalIndiaRestritivo(){
+Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
     auto begin = std::chrono::high_resolution_clock::now();
     DisjointSetForest forest(this->getOrder());
     // // [ -1, -1, -1, ..., -1]
@@ -1851,6 +1851,9 @@ Graph* Graph::kruskalIndiaRestritivo(){
             cout << "error" << endl;
             return aux;
         }
+        if(aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() >= grauRestricao
+        					 || aux->getNode(graphEdges[i].getNodeIdTarget())->getDegree() >= grauRestricao)
+            continue;
         // cout << "i: "
             // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
             // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
@@ -1903,4 +1906,130 @@ Graph* Graph::kruskalIndiaRestritivo(){
     return aux;
 
 
+}
+Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration){
+    // INICIO DO CODIGO SOLTA O RELOGIO
+    double sum = 0;
+    double add = 1;
+    auto begin = std::chrono::high_resolution_clock::now();
+	int bestCost = INT_MAX;
+	Graph *optimalGraph = nullptr;
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    //int solucaoRestritivo = kruskalIndiaRestritivo(grauRestricao);
+    int solucaoRestritivo = 777;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    cout << "listSize: " << listSize << endl;
+    cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    int contador = 0;
+
+    for(int i = 0; i < numberIteration; i++){
+    	cout << "i: " << i << " ";
+    	this->auxKruskalIndiaAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize, &contador, solucaoRestritivo);
+    }
+
+    cout << "Melhor custo de AGM: " << bestCost << endl;
+    // cout << "Solucao do Kruskal Restritivo: " << solucaoRestritivo << endl;
+    cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " <<
+                    (double)contador/numberIteration*100 << "% do total de iteracoes" << endl;
+
+
+    // INICIO DO CODIGO PAUSA O RELOGIO
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+
+    //cout << "Result: " << sum << endl;
+
+    cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
+    // FIM
+
+
+    return optimalGraph;
+}
+void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes){
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    DisjointSetForest forest(this->getOrder());
+    int solutionSize = 0;
+    Node *p = nullptr;
+    EdgeInfo edge;
+    int weight = 0;
+    float alpha = 0.01f;
+    int sourceParent, targetParent;
+    int i;
+    for(i =0; i < listSize; i++){
+        int randomI = rand()%(min(listSize - i, (int)(alpha*listSize))) + i; // note que eu to arredondando para baixo, e.g. 3.3333 = 3;
+        //cout << " "<<  randomI -i<< ", ";
+        EdgeInfo auxx = graphEdges[i];
+        graphEdges[i] = graphEdges[randomI];
+        graphEdges[randomI] = auxx;
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            cout << "out of bounds!!!" << endl;
+            return ;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            cout << "error" << endl;
+            return ;
+        }
+        if(aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() >= grauRestricao
+        					 || aux->getNode(graphEdges[i].getNodeIdTarget())->getDegree() >= grauRestricao)
+            continue;
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            // remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+    if(!aux->isConnected()){
+        cout << "solucao nao viavel";
+        return;
+    }
+    cout << "peso: " << weight;
+
+    if (weight < solKrusRes)
+    {
+        *contador = *contador + 1;
+        cout << " - melhor que KrusRes!";
+    }
+
+    if (weight < *bestCost)
+    {
+    	*bestCost = weight;
+    	*optimalGraph = aux;
+        if (*bestCost < solKrusRes)
+        {
+            cout << " - nova melhor solucao!!";
+        }
+    }
+
+    cout << endl;
+    return;
 }

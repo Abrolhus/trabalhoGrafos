@@ -177,6 +177,8 @@ int menu(){
     cout << "[14] Kruskal aleatorio com restricao de grau" << endl;
     cout << "[15] Kruskal aleatorio" << endl;
     cout << "[16] Kruskal India" << endl;
+    cout << "[17] Kruskal India Restritivo" << endl;
+    cout << "[18] Kruskal India Aleatorio Restritivo" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -364,6 +366,27 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             break;
 
        }
+       case 17:{
+            int grauRestricao;
+            cout << "Deseja restringir a que grau? " << endl;
+            cin >> grauRestricao;
+            Graph* kruskalRestritivo = graph->kruskalRestritivo(grauRestricao);
+       }
+       case 18:{
+            int grauRestritivo;
+            int numeroIteracoes;
+
+            cout << "Deseja restringir a que grau? " << endl;
+            cin >> grauRestritivo;
+
+            cout << "Quantas iteracoes deseja?" << endl;
+            cin >> numeroIteracoes;
+
+            Graph* kruskalRes = graph->kruskalIndiaAleatorioRestritivo(grauRestritivo, numeroIteracoes);
+            kruskalRes->print();
+            break;
+
+       }
 
         case 0:{
 
@@ -461,8 +484,8 @@ int main(int argc, char const *argv[]) {
 
     if(input_file.is_open()){
 
-        //graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
-        graph = leituraEUC_2D(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        // graph = leituraEUC_2D(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
     }else
         cout << "Unable to open " << argv[1];
 
