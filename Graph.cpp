@@ -415,10 +415,29 @@ void Graph::breadthFirstSearch(int idFirstNode)
     {
         cout << aux[i]  << " ";
     }
+
+
+bool Graph::isConnected()
+{
+    int ordem[this->getOrder()];
+    this->breadthFirstSearch(0, ordem);
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        if (ordem[i] == -1)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
+<<<<<<< Updated upstream
+void Graph::breadthFirstSearch(int idFirstNode, int ordem[]){
+=======
+}
 
 void Graph::auxBreadthFirstSearch(int idFirstNode, int ordem[]){
+>>>>>>> Stashed changes
     int cont = 1;
     Node *p = this->getNode(idFirstNode);
     Edge *e = nullptr;
@@ -1132,12 +1151,15 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
     }
     // FIM
 
+<<<<<<< Updated upstream
     int solucaoRestritivo = utilKruskalRestritivo(grauRestricao);
-    // cout << "Melhor custo de AGM viavel: " << bestCost << endl;
+=======
+    cout << "Melhor custo de AGM viavel: " << bestCost << endl;
+>>>>>>> Stashed changes
 
 
 	Graph *optimalGraph = nullptr;
-	double bestCost = 9999999999;
+	int bestCost = INT_MAX;
     auto graphEdges = vector<EdgeInfo>(this->getNumberEdges()/(1+(1 - (int)this->getDirected() ))); // cria um vetor com as Edges do grafo, tamanho eh dividido por dois caso o grafo seja nao direcionado
     // auto graphEdges = vector<EdgeInfo>(this->getNumberEdges()/(1)); // cria um vetor com as Edges do grafo, tamanho eh dividido por dois caso o grafo seja nao direcionado
 
@@ -1180,7 +1202,7 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
 }
 
 
-void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes)
+void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes)
 {
     /// auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     /// int isVisited[this->getOrder()];
@@ -1238,15 +1260,14 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, double* bestCost, G
         }
     }
 
-
+<<<<<<< Updated upstream
     cout << "peso: " << weight;
 
     if (weight < solKrusRes)
     {
         *contador = *contador + 1;
         cout << " - melhor que KrusRes!";
-    }
-
+=======
     if (aux->isConnected())
     {
         cout << "Solucao Viavel! Peso: " << weight << endl;
@@ -1255,6 +1276,7 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, double* bestCost, G
     else
     {
         cout << "Solucao nao viavel..." << endl;
+>>>>>>> Stashed changes
     }
 
     if (weight < *bestCost && aux->isConnected())

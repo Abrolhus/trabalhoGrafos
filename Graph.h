@@ -52,8 +52,12 @@ class Graph{
 
         //methods phase1
         void topologicalSorting();
+<<<<<<< Updated upstream
+        void breadthFirstSearch(int idFirstNode, int ordem[]);
+=======
         void breadthFirstSearch(int idFirstNode);
         void auxBreadthFirstSearch(int idFirstNode, int ordem[]);
+>>>>>>> Stashed changes
         Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
@@ -67,7 +71,7 @@ class Graph{
         Graph* kruskalAleatorio();
         Graph* kruskalRestritivo(int grauRestricao);
         int utilKruskalRestritivo(int grauRestricao);
-        void auxKruskalAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, std::vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes);
+        void auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, std::vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes);
         Graph* kruskalAleatorioRestritivo(int grauRestricao, int numberIteration);
         Graph* kruskal2();
         Graph* kruskal3(int grauRestricao);
@@ -79,6 +83,7 @@ class Graph{
         float greedRandom();
         float greedRactiveRandom();
         void print();
+        bool isConnected();
 
         bool checkContainsId(int id, int nodeList[], int listLength);
     private:
