@@ -279,6 +279,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             int primeiroNo;
             cout << endl << "A partir de qual no deseja fazer a busca em largura? " << endl;
             cin >> primeiroNo;
+<<<<<<< Updated upstream
             int ordemLargura[graph->getOrder()];
             graph->breadthFirstSearch(primeiroNo, ordemLargura);
 
@@ -291,6 +292,11 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             }
 
             cout << endl << "É conexo? " << graph->isConnected();
+=======
+            graph->breadthFirstSearch(primeiroNo);
+            cout << endl;
+            cout << "Eh conexo? " << graph->isConnected() << endl;
+>>>>>>> Stashed changes
 
             break;
         }
@@ -327,13 +333,15 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cout << "Deseja restringir a que grau? " << endl;
             cin >> grauRestricao;
             Graph* kruskalRestritivo = graph->kruskalRestritivo(grauRestricao);
-            //kruskalRestritivo->print();
+            kruskalRestritivo->print();
             break;
        }
 
        case 14:{
             int grauRestritivo;
             int numeroIteracoes;
+
+            graph->print();
 
             cout << "Deseja restringir a que grau? " << endl;
             cin >> grauRestritivo;
@@ -342,7 +350,9 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cin >> numeroIteracoes;
 
             Graph* kruskalRes = graph->kruskalAleatorioRestritivo(grauRestritivo, numeroIteracoes);
-            //kruskalRes->print();
+            cout << "Melhor solucao eh viavel? " << kruskalRes->isConnected() << endl;
+            cout << "Busca em largura: " << endl;
+            kruskalRes->breadthFirstSearch(0);
             break;
 
        }

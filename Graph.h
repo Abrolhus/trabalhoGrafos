@@ -52,13 +52,19 @@ class Graph{
 
         //methods phase1
         void topologicalSorting();
+<<<<<<< Updated upstream
         void breadthFirstSearch(int idFirstNode, int ordem[]);
+=======
+        void breadthFirstSearch(int idFirstNode);
+        void auxBreadthFirstSearch(int idFirstNode, int ordem[]);
+>>>>>>> Stashed changes
         Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
         float floydMarshall(int idSource, int idTarget);
         float dijkstra(int idSource, int idTarget);
         void connectionsFloyd();
+        bool isConnected();
 
         //Kruskals
         Graph* kruskal();

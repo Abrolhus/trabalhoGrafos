@@ -382,6 +382,40 @@ bool Graph::isCyclicDirected()
 
 
 //Function that prints a set of edges belongs breadth tree
+bool Graph::isConnected()
+{
+    int ordem[this->getOrder()];
+    this->auxBreadthFirstSearch(0, ordem);
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        if (ordem[i] == -1)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void Graph::breadthFirstSearch(int idFirstNode)
+{
+    int ordem1[this->getOrder()];
+    this->auxBreadthFirstSearch(idFirstNode, ordem1);
+
+    int aux[this->getOrder()];
+    cout << endl;
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        //cout << ordem1[i]  << " ";
+        aux[ordem1[i] - 1] = i;
+    }
+
+    cout << "Ordem de descoberta: ";
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        cout << aux[i]  << " ";
+    }
+
 
 bool Graph::isConnected()
 {
@@ -397,7 +431,13 @@ bool Graph::isConnected()
     return true;
 }
 
+<<<<<<< Updated upstream
 void Graph::breadthFirstSearch(int idFirstNode, int ordem[]){
+=======
+}
+
+void Graph::auxBreadthFirstSearch(int idFirstNode, int ordem[]){
+>>>>>>> Stashed changes
     int cont = 1;
     Node *p = this->getNode(idFirstNode);
     Edge *e = nullptr;
@@ -1047,7 +1087,7 @@ Graph* Graph::kruskalAleatorio()
     EdgeInfo *edgeSolution = new EdgeInfo[listSize];
     int solutionSize = 0;
     Node *p = nullptr;
-    float alpha = 0.05;
+    float alpha = 0.01;
     int weight = 0;
 
     //cout << "nums: " << endl;
@@ -1111,7 +1151,11 @@ Graph* Graph::kruskalAleatorioRestritivo(int grauRestricao, int numberIteration)
     }
     // FIM
 
+<<<<<<< Updated upstream
     int solucaoRestritivo = utilKruskalRestritivo(grauRestricao);
+=======
+    cout << "Melhor custo de AGM viavel: " << bestCost << endl;
+>>>>>>> Stashed changes
 
 
 	Graph *optimalGraph = nullptr;
@@ -1216,15 +1260,26 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, int* bestCost, Grap
         }
     }
 
+<<<<<<< Updated upstream
     cout << "peso: " << weight;
 
     if (weight < solKrusRes)
     {
         *contador = *contador + 1;
         cout << " - melhor que KrusRes!";
+=======
+    if (aux->isConnected())
+    {
+        cout << "Solucao Viavel! Peso: " << weight << endl;
+        //aux->print();
+    }
+    else
+    {
+        cout << "Solucao nao viavel..." << endl;
+>>>>>>> Stashed changes
     }
 
-    if (weight < *bestCost)
+    if (weight < *bestCost && aux->isConnected())
     {
     	*bestCost = weight;
     	*optimalGraph = aux;
@@ -1431,10 +1486,10 @@ void Graph::print(){
     cout << "Ordem: " << this->getOrder() << endl;
     Node* p = first_node;
     while(p != nullptr){
-        cout << p->getId() +1 << ": ";
+        cout << p->getId()<< ": ";
         Edge* e = p->getFirstEdge();
         while(e != nullptr){
-            cout << "->" << e->getTargetId()+1 << " ";
+            cout << "->" << e->getTargetId()<< " ";
             e = e->getNextEdge();
         }
         cout << "\t GRAU: " << p->getDegree() << endl;
