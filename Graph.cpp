@@ -450,13 +450,21 @@ void Graph::breadthFirstSearch(int idFirstNode, int ordem[]){
 
 
 
-float Graph::floydMarshall(int idSource, int idTarget){
+float Graph::floydMarshall(int idSource, int idTarget, bool imprimeMatriz){
+
+    if (idSource >= this->getOrder() || idTarget >= this->getOrder())
+    {
+        cout << "Nao foi possivel calcular distancia. Vertices inexistentes!" << endl;
+        return 0;
+    }
+
+
     vector<vector<float>> edgeMatrix(this->getOrder(), vector<float>(this->getOrder(), INF)); // matriz com os pesos das edges de todo noh (i) para cada outro noh (j)
     for(int i = 0; i < this->getOrder(); i++){
         for(int j = 0; j < this->getOrder(); j++){
-            cout << edgeMatrix[i][j] << ", ";
+            //cout << edgeMatrix[i][j] << ", ";
         }
-        cout << endl;
+        //cout << endl;
     }
     for(auto node = this->getFirstNode(); node != nullptr; node = node->getNextNode()){ // O(n^2)
         edgeMatrix[node->getId()][node->getId()] = 0;
@@ -473,13 +481,22 @@ float Graph::floydMarshall(int idSource, int idTarget){
             }
         }
     }
-    cout << "Matriz final do Floyd" << endl;
-    for(int i = 0; i < this->getOrder(); i++){
-        for(int j = 0; j < this->getOrder(); j++){
-            cout << edgeMatrix[i][j] << ", ";
+
+    if (imprimeMatriz)
+    {
+        cout << "Matriz final de Floyd" << endl;
+        for(int i = 0; i < this->getOrder(); i++){
+            cout << "[\t";
+            for(int j = 0; j < this->getOrder(); j++){
+                cout << edgeMatrix[i][j] << "\t";
+            }
+            cout << "]" << endl;
         }
-        cout << endl;
     }
+    cout << endl << endl;
+
+    cout << "Distancia entre " << idSource << " e " << idTarget << ": ";
+
     return edgeMatrix[idSource][idTarget];
 }
 
@@ -587,6 +604,13 @@ void Graph::connectionsFloyd(){
 
 
 float Graph::dijkstra(int idSource, int idFinal){
+
+    if (idSource >= this->getOrder() || idFinal >= this->getOrder())
+    {
+        cout << "Nao foi possivel calcular distancia. Vertices inexistentes!" << endl;
+        return 0;
+    }
+
     map<int, NodeDist> allNodes;
     priority_queue<NodeDist*, vector<NodeDist*>, compareCosts> unvisitedNodes;
     Node* sourceNode = this->getNode(idSource);
@@ -612,16 +636,16 @@ float Graph::dijkstra(int idSource, int idFinal){
 
 
         auto currentNode = currentNodeInfo->node;
-        cout << "currentNode: " << currentNode->getId() +1<< "custoAteEle:" << currentNodeInfo->pathCost<< endl;
+        //cout << "currentNode: " << currentNode->getId() +1<< "custoAteEle:" << currentNodeInfo->pathCost<< endl;
         for(auto edge = currentNode->getFirstEdge(); edge != nullptr; edge = edge->getNextEdge()){
             int targetId = edge->getTargetId(); // O(1)
             NodeDist* nodeInfo = &allNodes.at(targetId); // O(1) if(nodeInfo->wasVisited){// if node was no "visited" //  // O(1) continue; }
-            cout << "     id:" << targetId +1 << ", custoAntigo: " << nodeInfo->pathCost;
+            //cout << "     id:" << targetId +1 << ", custoAntigo: " << nodeInfo->pathCost;
             if(nodeInfo->pathCost >= (edge->getWeight() + currentNodeInfo->pathCost)){
-                cout << " _custoDaEdge:" << edge->getWeight();
+                //cout << " _custoDaEdge:" << edge->getWeight();
                 nodeInfo->pathCost = edge->getWeight() + currentNodeInfo->pathCost;
                 nodeInfo->previousId = currentNode->getId();
-                cout << " _novoCusto:" << nodeInfo->pathCost << ", "<< endl;
+                //cout << " _novoCusto:" << nodeInfo->pathCost << ", "<< endl;
             }
         }
         cout << endl;
@@ -728,8 +752,17 @@ Graph* Graph::prim(){
         index++;
     }
 
-
-    return grafoSolucao;
+    if (grafoSolucao->isConnected())
+    {
+        cout << "Solucao eh viavel!" << endl;
+        cout << "Peso: " << totalMiniumWeight << endl;
+        return grafoSolucao;
+    }
+    else
+    {
+        cout << "Solucao nao viavel! Grafo desconexo" << endl;
+        return grafoSolucao;
+    }
 }
 
 void Graph::topologicalSorting(){
@@ -776,10 +809,10 @@ void Graph::topologicalSorting(){
         }
     }
 
-    cout << endl << "Ordenacao Topologica do grafo direcionado acliclo: ";
+    cout << endl << "Ordenacao Topologica do grafo direcionado acliclo: " << endl;
     for (int i = 0; i < this->getOrder(); i++)
     {
-        cout << DAG[i] + 1 << " ";
+        cout << DAG[i] << " ";
 
     }
     cout << endl;
@@ -1431,10 +1464,10 @@ void Graph::print(){
     cout << "Ordem: " << this->getOrder() << endl;
     Node* p = first_node;
     while(p != nullptr){
-        cout << p->getId() +1 << ": ";
+        cout << p->getId()<< ": ";
         Edge* e = p->getFirstEdge();
         while(e != nullptr){
-            cout << "->" << e->getTargetId()+1 << " ";
+            cout << "->" << e->getTargetId()<< " ";
             e = e->getNextEdge();
         }
         cout << "\t GRAU: " << p->getDegree() << endl;
@@ -1488,7 +1521,7 @@ void Graph::escreverEmArquivoTeste(ofstream& output_file){
 }
 
 Graph* Graph::kruskal2(){
-    auto begin = std::chrono::high_resolution_clock::now();
+    //auto begin = std::chrono::high_resolution_clock::now();
     // auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
     // int isVisited[this->getOrder()];
 //
@@ -1542,11 +1575,11 @@ Graph* Graph::kruskal2(){
         sourceParent = forest.find(edge.getNodeIdSource()); // -1
         targetParent = forest.find(edge.getNodeIdTarget()); // -1
         if(sourceParent == -1 || targetParent == -1){
-            cout << "out of bounds!!!" << endl;
+            //cout << "out of bounds!!!" << endl;
             return aux;
         }
         if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
-            cout << "error" << endl;
+            //cout << "error" << endl;
             return aux;
         }
         // cout << "i: "
@@ -1565,6 +1598,19 @@ Graph* Graph::kruskal2(){
         }
 
     }
+
+    if (aux->isConnected())
+    {
+        cout << "Solucao eh viavel!" << endl;
+        cout << "Peso: " << weight << endl;
+        return aux;
+    }
+    else
+    {
+        cout << "Solucao nao viavel! Grafo desconexo" << endl;
+        return aux;
+    }
+
     // int q = 33;
     // auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
     // forest.print();
@@ -1585,20 +1631,19 @@ Graph* Graph::kruskal2(){
 //
 
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    cout << "\n\n\nduracao: " << (elapsed.count() * 1e-9)<< endl;
-    cout << "peso: " << weight << endl;
-    // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
-    // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
-    aux->print();
-    // q = 33;
-    auto sonsOfQ = aux->getSonsOf(33, 25);
-    cout << "filhos do 34:" << endl;
-    for(int i= 0; i < sonsOfQ.size(); i++){
-        cout << i+1 << ": " << (int)sonsOfQ.at(i) << ", ";
-    }
-    return aux;
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    // cout << "\n\n\nduracao: " << (elapsed.count() * 1e-9)<< endl;
+    // cout << "peso: " << weight << endl;
+    // // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
+    // // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
+    // aux->print();
+    // // q = 33;
+    // auto sonsOfQ = aux->getSonsOf(33, 25);
+    // cout << "filhos do 34:" << endl;
+    // for(int i= 0; i < sonsOfQ.size(); i++){
+    //     cout << i+1 << ": " << (int)sonsOfQ.at(i) << ", ";
+    // }
 
 
 }
@@ -1919,6 +1964,7 @@ Graph* Graph::kruskalIndiaRestritivo(int grauRestricao, ofstream& output_file){
 
 
 }
+
 Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration, float alpha, ofstream& output_file){
     // INICIO DO CODIGO SOLTA O RELOGIO
     //double sum = 0;
@@ -2068,4 +2114,262 @@ void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, double* bestCo
     //cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
     // FIM
     return;
+}
+
+Graph* Graph::algoritmoGulosoAleatorioRestritivo(int grauRestricao, int numberIteration, float alpha){
+    // INICIO DO CODIGO SOLTA O RELOGIO
+    //double sum = 0;
+    //double add = 1;
+    //auto begin = std::chrono::high_resolution_clock::now();
+    double bestCost = 999999999999;
+    double sumWeight = 0;
+    float sumTET = 0;
+    int contNViaveis = 0;
+    Graph *optimalGraph = nullptr;
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    //int solucaoRestritivo = kruskalIndiaRestritivo(grauRestricao);
+    //int solucaoRestritivo = 777;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    //cout << "listSize: " << listSize << endl;
+    //cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    //int contador = 0;
+
+    for(int i = 0; i < numberIteration; i++){
+        cout << "i: " << i << " ";
+        this->auxAlgoritmoGulosoAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize, alpha, &sumWeight, &sumTET, &contNViaveis);
+    }
+    cout << "Numero de iteracoes: " << numberIteration << endl;
+    cout << "Numero de solucoes nao viaveis: " << contNViaveis << endl;
+    cout << "Porcentagem de solucoes nao viaveis: " << (contNViaveis/numberIteration) * 100 << "%" << endl;
+    cout << "Melhor solucao: " << bestCost << endl;
+    cout << "Media das solucoes: " << sumWeight/(numberIteration - contNViaveis) << endl;
+    cout << "Media de tempo das execucoes: " << sumTET/(numberIteration - contNViaveis) << endl;
+    cout << endl << endl;
+    // cout << "Solucao do Kruskal Restritivo: " << solucaoRestritivo << endl;
+    //cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " <<
+                    //(double)contador/numberIteration*100 << "% do total de iteracoes" << endl;
+
+
+
+    // // INICIO DO CODIGO PAUSA O RELOGIO
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+
+    // //cout << "Result: " << sum << endl;
+
+    // cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
+    // // FIM
+
+
+    return optimalGraph;
+}
+void Graph::auxAlgoritmoGulosoAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, float alpha, double* sumWeight, float* sumTET, int *contNViaveis){
+    //STARTA CLOCK
+    auto begin = std::chrono::high_resolution_clock::now();
+
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    DisjointSetForest forest(this->getOrder());
+    int solutionSize = 0;
+    Node *p = nullptr;
+    EdgeInfo edge;
+    int weight = 0;
+    int sourceParent, targetParent;
+    int i;
+    for(i =0; i < listSize; i++){
+        int randomI = rand()%(min(listSize - i, (int)(alpha*listSize))) + i; // note que eu to arredondando para baixo, e.g. 3.3333 = 3;
+        //cout << " "<<  randomI -i<< ", ";
+        EdgeInfo auxx = graphEdges[i];
+        graphEdges[i] = graphEdges[randomI];
+        graphEdges[randomI] = auxx;
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            //cout << "out of bounds!!!" << endl;
+            return ;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            //cout << "error" << endl;
+            return ;
+        }
+        if(aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() >= grauRestricao
+                             || aux->getNode(graphEdges[i].getNodeIdTarget())->getDegree() >= grauRestricao)
+            continue;
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            // remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+    if(!aux->isConnected()){
+        cout << "Solucao nao viavel!";
+        *contNViaveis++;
+        return;
+    }
+    cout << "peso: " << weight;
+    *sumWeight += weight;
+
+    // if (weight < solKrusRes)
+    // {
+    //     *contador = *contador + 1;
+    //     cout << " - melhor que KrusRes!";
+    // }
+
+    if (weight < *bestCost)
+    {
+        *bestCost = weight;
+        *optimalGraph = aux;
+        // if (*bestCost < solKrusRes)
+        // {
+        //     cout << " - nova melhor solucao!!";
+        // }
+    }
+
+    cout << endl;
+    // INICIO DO CODIGO PAUSA O RELOGIO
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    *sumTET += elapsed.count() * 1e-9;
+
+    //cout << "Result: " << sum << endl;
+
+    //cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
+    // FIM
+    return;
+}
+
+Graph* Graph::algoritmoGulosoRestritivo(int grauRestricao){
+
+    auto begin = std::chrono::high_resolution_clock::now();
+    DisjointSetForest forest(this->getOrder());
+    // // [ -1, -1, -1, ..., -1]
+    // bool solution = false;
+    int sourceParent, targetParent;
+    EdgeInfo edge;
+    // cout << "ListSize: " << listSize << endl;
+    // cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    // cout << "first edge: " << graphEdges[0].getNodeIdSource() << endl;
+    auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
+    auto remainingEdges = vector<EdgeInfo>();
+    int isVisited[this->getOrder()];
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+    //coloca todas as arestas no vetor de EdgeInfo e ordena por peso;
+    int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
+    //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
+    //se o grafo se tornou ciclo ou não
+    Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
+    EdgeInfo *edgeSolution = new EdgeInfo[listSize];
+    int solutionSize = 0;
+    Node *p = nullptr;
+    double weight = 0;
+    int i;
+    for(i =0; i < listSize; i++){
+        edge = graphEdges[i];
+        // cout << i << ": " << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << " (" << edge.getEdgeWeight() << ")" << endl;
+        sourceParent = forest.find(edge.getNodeIdSource()); // -1
+        targetParent = forest.find(edge.getNodeIdTarget()); // -1
+        if(sourceParent == -1 || targetParent == -1){
+            //cout << "out of bounds!!!" << endl;
+            return aux;
+        }
+        if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
+            //cout << "error" << endl;
+            return aux;
+        }
+        if(aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() >= grauRestricao
+                             || aux->getNode(graphEdges[i].getNodeIdTarget())->getDegree() >= grauRestricao)
+            continue;
+        // cout << "i: "
+            // << edge.getNodeIdSource() << " (pai = "<< sourceParent << ") " << ", "
+            // << edge.getNodeIdTarget() << " (pai = "<< targetParent << ") " << ", " << endl;
+
+        if(sourceParent != targetParent){
+            forest.setUnion(sourceParent, targetParent);
+            // edgeSolution.push_back(edge);
+            weight += edge.getEdgeWeight();
+            aux->insertEdge(edge.getNodeIdSource(), edge.getNodeIdTarget(), edge.getEdgeWeight());
+        }
+        else {
+            remainingEdges.push_back(edge);
+            continue;
+        }
+
+    }
+    // int q = 33;
+    // auto edgesLeavingQtree =forest.getEdgesLeavingSubTree(q, remainingEdges);
+    // forest.print();
+    // for(auto edge : edgesLeavingQtree){
+        // cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << ",  ";
+    // }
+    // cout << endl;
+    // EdgeInfo chosenEdge = edgesLeavingQtree[3];
+    // int commonFather = forest.getFirstCommonFather(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget());
+    // vector<EdgeInfo> cicleEdges = forest.caminhoReuniaoFamiliar(chosenEdge.getNodeIdSource(), chosenEdge.getNodeIdTarget(), commonFather);
+    // cout << endl;
+    // cout << endl;
+    // std::cout << "first Common Father between " << chosenEdge.getNodeIdSource() << " and " << chosenEdge.getNodeIdTarget() << ": " << commonFather << endl;
+    // cout <<"caminho ate o pai em comum: (ciclo sem a aresta " << chosenEdge.getNodeIdSource() << "->" << chosenEdge.getNodeIdTarget() << ")" <<endl;
+    // for(auto edge : cicleEdges){
+        // cout << edge.getNodeIdSource() << "->" << edge.getNodeIdTarget() << "(" << edge.getEdgeWeight() << ")" << ",  " << endl;
+    // }
+//
+
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+
+    if (!aux->isConnected())
+    {
+        cout << "Solucao nao viavel!" << endl;
+        return aux;
+    }
+
+    cout << "Solucao viavel!" << endl;
+    cout << "Solucao: " << weight << endl;
+    cout << "Tempo de execucao: " << (elapsed.count() * 1e-9)<< endl;
+    cout << endl;
+    
+    // // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
+    // // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
+    // aux->print();
+    // // q = 33;
+    // auto sonsOfQ = aux->getSonsOf(33, 25);
+    // cout << "filhos do 34:" << endl;
+    // for(int i= 0; i < sonsOfQ.size(); i++){
+    //     cout << i+1 << ": " << (int)sonsOfQ.at(i) << ", ";
+    // }
+    return aux;
+
+
 }

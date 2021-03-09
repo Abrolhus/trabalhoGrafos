@@ -56,9 +56,12 @@ class Graph{
         Graph* dcMST(int d, int interactions);
         Graph* getVertexInduced(int* listIdNodes);
         Graph* prim();
-        float floydMarshall(int idSource, int idTarget);
+        float floydMarshall(int idSource, int idTarget, bool imprimeMatriz);
         float dijkstra(int idSource, int idTarget);
         void connectionsFloyd();
+        Graph* algoritmoGulosoRestritivo(int grauRestricao);
+        Graph* algoritmoGulosoAleatorioRestritivo(int grauRestricao, int numberIteration, float alpha);
+        void auxAlgoritmoGulosoAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, float alpha, double* sumWeight, float* sumTET, int *contNViaveis);
 
         //Kruskals
         Graph* kruskal();

@@ -43,6 +43,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
 
         while(input_file >> idNodeSource >> idNodeTarget) {
 
+            cout << "Inserindo aresta: " << idNodeSource << "->" << idNodeTarget << endl;
             graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, 0);
 
         }
@@ -201,16 +202,8 @@ int menu(){
     cout << "[6] Imprimir caminhamento em largura" << endl;
     cout << "[7] Imprimir ordenacao topológica" << endl;
     cout << "[8] Algoritmo Guloso" << endl;
-    cout << "[9] Algoritmo Guloso Randomizado " << endl;
-    cout << "[10] Algoritmo Guloso Randomizado Reativo" << endl;
-    cout << "[11] Conexidade" << endl;
-    cout << "[12] Escreve grafo em arquivo" << endl;
-    cout << "[13] Kruskal com restricao de grau" << endl;
-    cout << "[14] Kruskal aleatorio com restricao de grau" << endl;
-    cout << "[15] Kruskal aleatorio" << endl;
-    cout << "[16] Kruskal India" << endl;
-    cout << "[17] Kruskal India Restritivo" << endl;
-    cout << "[18] Kruskal India Aleatorio Restritivo" << endl;
+    cout << "[9] Algoritmo Guloso Randomizado" << endl;
+    cout << "[10] Conexidade" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -232,6 +225,8 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
         //Subgrafo induzido por um conjunto de vértices X;
         case 1:{
 
+            cout << "Subgrafo induzido por conjunto de vertices selecionado" << endl << endl;
+
             int tamNosLista;
 
             cout << "Quantos nos deseja?" << endl;
@@ -245,7 +240,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             for (int i = 0; i < tamNosLista - 1; i++)
             {
                 cin >> proxNo;
-                nosLista[i] = proxNo - 1;
+                nosLista[i] = proxNo;
             }
 
             nosLista[tamNosLista - 1] = -1;
@@ -254,7 +249,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cout << "Nos escolhidos: ";
             for (int i = 0; i < tamNosLista - 1; i++)
             {
-                cout << nosLista[i] + 1 << " ";
+                cout << nosLista[i]  << " ";
             }
 
             cout << endl;
@@ -266,181 +261,168 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             //Caminho mínimo entre dois vértices usando Dijkstra;
         case 2:
         {
-            cout << " dijkstra: " << graph->dijkstra(0, 6) << endl;
+
+            cout << "Distancia minima entre dois vertices usando algoritimo de Dijkstra selecionado" << endl << endl;
+
+            int vert1;
+            cout << "Indique o primeiro vertice: " << endl;
+            cin >> vert1;
+
+            int vert2;
+            cout << "Indique o segundo vertice: " << endl;
+            cin >> vert2;
+
+            cout << endl;
+
+            cout << "Distancia entre" << vert1 << " e " << vert2 << " :" << graph->dijkstra(vert1, vert2) << endl;
 
             break;
         }
         //Caminho mínimo entre dois vértices usando Floyd;
         case 3:{
 
-            cout << "floydMarshall: " <<  graph->floydMarshall(0, 6) << endl;
+            cout << "Distancia minima entre dois vertices usando algoritimo de Floyd-Marshall selecionado" << endl << endl;
+
+            int vertex1;
+            cout << "Indique o primeiro vertice: " << endl;
+            cin >> vertex1;
+
+            int vertex2;
+            cout << "Indique o segundo vertice: " << endl;
+            cin >> vertex2;
+
+            char querMatriz;
+            cout << "Deseja imprimir toda a matriz? (y/n)" << endl;
+            cin >> querMatriz;
+
+            cout << endl;
+
+            if (querMatriz == 'y')
+            {
+                //cout << "Matriz completa e distancia entre os vertices selecionados: " << endl;
+                cout << graph->floydMarshall(vertex1, vertex2, true);
+            }
+            else
+            {
+                //cout << "Distancia entre os vertices selecionados: " << endl;
+                cout << graph->floydMarshall(vertex1, vertex2, false);
+            }
 
             break;
         }
-        //AGM - Kruscal;
-        case 5:{
-
-            Graph* kruskal = graph->kruskal();
-            // cout << endl << "Arvore Geradora Minima usando Kruskal: " << endl;
-            // kruskal->print();
-            // cout << endl;
-            // cout << endl;
-            // cout << endl;
-
-            // vector<Graph*> kruskRands;
-            // for(int i = 0; i < 200; i++){
-            //     kruskRands.push_back(graph->kruskalAleatorio(2));
-            //     // kruskRand->print();
-            // }
-
-            // Graph* kruskal = graph->auxKruskalAleatorio(3, 200);
-            // kruskal->print();
-
-
-            break;
-
-        }
-        //AGM Prim;
+        //AGM - Prim;
         case 4:{
 
+            cout << "AGM usando algoritimo de Prim selecionado" << endl << endl;
+
             Graph* prim = graph->prim();
-            cout << endl << "Arvore Geradora Minima usando Prim: " << endl;
-            prim->print();
+
+            break;
+
+        }
+        //AGM Kruskal;
+        case 5:{
+
+            cout << "AGM usando algoritimo de Kruskal selecionado" << endl << endl;
+
+            Graph* kruskalComum = graph->kruskal2();
 
             break;
         }
         //Busca em largura;
         case 6:{
 
+            cout << "Caminhamento em largura selecionado" << endl << endl;
+
             int primeiroNo;
             cout << endl << "A partir de qual no deseja fazer a busca em largura? " << endl;
             cin >> primeiroNo;
+
             int ordemLargura[graph->getOrder()];
             graph->breadthFirstSearch(primeiroNo, ordemLargura);
 
             int auxLargura[graph->getOrder()];
+
             cout << "Ordem de descoberta: "<< endl;
             for (int i = 0; i < graph->getOrder(); i++)
             {
                 auxLargura[ordemLargura[i] - 1] = i;
-                cout << auxLargura[i]  << " ";
+                //cout << ordemLargura[i] - 1 << " ";
+            }
+            for (int i = 0; i < graph->getOrder(); i++)
+            {
+                cout << auxLargura[i] << " ";
             }
 
-            cout << endl << "É conexo? " << graph->isConnected();
+            cout << endl << "É conexo? " << boolalpha << graph->isConnected();
 
             break;
         }
             //Ordenação Topologica;
         case 7:{
 
+            cout << "Ordenação Topologica selecionado" << endl << endl;
+
+            if (!graph->getDirected())
+            {
+                cout << "Solucao inviavel. Grafo nao eh direcionado!" << endl;
+                break;
+            }
+
             graph->topologicalSorting();
 
             break;
         }
         case 8:{
-            cout << "dcMST: " << endl;
-            auto* dcMST = graph->dcMST(2, 10);
-            cout << "dcMST: " << endl;
-            dcMST->print();
+            // cout << "dcMST: " << endl;
+            // auto* dcMST = graph->dcMST(2, 10);
+            // cout << "dcMST: " << endl;
+            // dcMST->print();
+
+            cout << "Algoritmo Guloso Restritivo selecionado" << endl << endl;
+
+            if (!graph->isConnected())
+            {
+                cout << "Solucao inviavel. Grafo nao eh conexo!" << endl;
+                break;
+            }
+
+            int grauRes;
+            cout << "Deseja restringir a que grau?" << endl;
+            cin >> grauRes;
+
+            cout << "Resultado: " << endl << endl;
+            Graph *gulosoRes = graph->algoritmoGulosoRestritivo(grauRes);
 
             break;
-       }
-       case 11:{
+        }
+        case 9:{
 
-            graph->connectionsFloyd();
+            cout << "Algoritmo Guloso Randomizado Restritivo selecionado" << endl << endl;
 
+            if (!graph->isConnected())
+            {
+                cout << "Solucao inviavel. Grafo nao eh conexo!" << endl;
+                break;
+            }
 
-            break;
-       }
-       case 12:{
-
-            graph->escreverEmArquivoTeste(output_file);
-            break;
-       }
-
-       case 13:{
             int grauRestricao;
-            cout << "Deseja restringir a que grau? " << endl;
+            cout << "Deseja restringir a que grau?" << endl;
             cin >> grauRestricao;
-            Graph* kruskalRestritivo = graph->kruskalRestritivo(grauRestricao);
-            //kruskalRestritivo->print();
-            break;
-       }
 
-       case 14:{
-            int grauRestritivo;
+            float alpha;
+            cout << "Deseja utilizar que alpha na randomizacao?" << endl;
+            cin >> alpha;
+
             int numeroIteracoes;
-
-            cout << "Deseja restringir a que grau? " << endl;
-            cin >> grauRestritivo;
-
-            cout << "Quantas iteracoes deseja?" << endl;
+            cout << "Deseja iterar quantas vezes?" << endl;
             cin >> numeroIteracoes;
 
-            Graph* kruskalRes = graph->kruskalAleatorioRestritivo(grauRestritivo, numeroIteracoes);
-            //kruskalRes->print();
-            break;
-
-       }
-
-       case 15:{
-
-            Graph* kruskalAle = graph->kruskalAleatorio();
-            //kruskalAle->print();
-            break;
-
-       }
-       case 16:{
-
-            // Graph* krusk2 = graph->kruskal2();
-            Graph* krusk3 = graph->kruskal3(3);
-            krusk3->print();
-            break;
-
-       }
-       case 17:{
-            int grauRestricao;
-            cout << "Deseja restringir a que grau? " << endl;
-            cin >> grauRestricao;
-            Graph* kruskalRestritivo = graph->kruskalRestritivo(grauRestricao);
-       }
-       case 18:{
-            // int grauRestritivo;
-            // int numeroIteracoes;
-
-            // cout << "Deseja restringir a que grau? " << endl;
-            // cin >> grauRestritivo;
-
-            // cout << "Quantas iteracoes deseja?" << endl;
-            // cin >> numeroIteracoes;
-            // Graph* grafo = leituraEUC_2D("pr144.txt", 0, 1, 0);
-
-            // Graph* kruskalRes = grafo->kruskalIndiaRestritivo(3);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.5);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.3);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.15);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.1);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.05);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.01);
-
-            // grafo = leituraEUC_2D("pr136.txt", 0, 1, 0);
-            
-            // kruskalRes = grafo->kruskalIndiaRestritivo(3);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.5);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.3);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.15);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.1);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.05);
-            // kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.01);
-            // // kruskalRes->print();
-
-
-
+            cout << "Resultado: " << endl << endl;
+            Graph *gulosoResAle = graph->algoritmoGulosoAleatorioRestritivo(grauRestricao, numeroIteracoes, alpha);
 
             break;
-
-       }
-
+        }
         case 0:{
 
             break;
@@ -472,36 +454,8 @@ int mainMenu(ofstream& output_file, Graph* graph){
     return 0;
 }
 
-
-
-
-int main(int argc, char const *argv[]) {
-
-    srand(time(NULL));
-    //Verificação se todos os parâmetros do programa foram entrados
-    if (argc != 6) {
-
-        cout << "ERROR: Expecting: ./<program_name> <input_file> <output_file> <directed> <weighted_edge> <weighted_node> " << endl;
-        return 1;
-
-    }
-
-    string program_name(argv[0]);
-    string input_file_name(argv[1]);
-
-    string instance;
-    if(input_file_name.find("v") <= input_file_name.size()){
-        string instance = input_file_name.substr(input_file_name.find("v"));
-        cout << "Running " << program_name << " with instance " << instance << " ... " << endl;
-    }
-
-    //Abrindo arquivo de entrada
-    ifstream input_file;
-    ofstream output_file;
-    input_file.open(argv[1], ios::in);
-    output_file.open(argv[2], ios::out | ios::trunc);
-
-
+void realizaTesteParte2(ofstream& output_file)
+{
     output_file << "LISTA DE TESTE PARA 10 INSTANCIAS " << endl;
     output_file << "Valores de alpha testados: 0.50, 0.30, 0.15, 0.10, 0.05, 0.01" << endl;
     output_file << "Instancias testadas: pr136, pr264, pr439, u724, rat783, u1060, vm1084, fl1400, pr2392, pcb3038" << endl;
@@ -815,14 +769,44 @@ int main(int argc, char const *argv[]) {
 
     cout << "vm1748 alpha 0.01 rodando..." << endl;
     kruskalRes = grafo->kruskalIndiaAleatorioRestritivo(3, 10, 0.01, output_file);
+}
+
+
+
+
+int main(int argc, char const *argv[]) {
+
+    srand(time(NULL));
+    //Verificação se todos os parâmetros do programa foram entrados
+    if (argc != 6) {
+
+        cout << "ERROR: Expecting: ./<program_name> <input_file> <output_file> <directed> <weighted_edge> <weighted_node> " << endl;
+        return 1;
+
+    }
+
+    string program_name(argv[0]);
+    string input_file_name(argv[1]);
+
+    string instance;
+    if(input_file_name.find("v") <= input_file_name.size()){
+        string instance = input_file_name.substr(input_file_name.find("v"));
+        cout << "Running " << program_name << " with instance " << instance << " ... " << endl;
+    }
+
+    //Abrindo arquivo de entrada
+    ifstream input_file;
+    ofstream output_file;
+    input_file.open(argv[1], ios::in);
+    output_file.open(argv[2], ios::out | ios::trunc);
 
 
     Graph* graph;
 
     if(input_file.is_open()){
 
-        //graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
-        graph = leituraEUC_2D(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        //raph = leituraEUC_2D(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
     }else
         cout << "Unable to open " << argv[1];
 
