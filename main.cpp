@@ -281,9 +281,9 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             int primeiroNo;
             cout << endl << "A partir de qual no deseja fazer a busca em largura? " << endl;
             cin >> primeiroNo;
-<<<<<<< Updated upstream
+
             int ordemLargura[graph->getOrder()];
-            graph->breadthFirstSearch(primeiroNo, ordemLargura);
+            graph->breadthFirstSearch(primeiroNo);
 
             int auxLargura[graph->getOrder()];
             cout << "Ordem de descoberta: "<< endl;
@@ -294,11 +294,11 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             }
 
             cout << endl << "É conexo? " << graph->isConnected();
-=======
-            graph->breadthFirstSearch(primeiroNo);
-            cout << endl;
-            cout << "Eh conexo? " << graph->isConnected() << endl;
->>>>>>> Stashed changes
+
+            // graph->breadthFirstSearch(primeiroNo);
+            // cout << endl;
+            // cout << "Eh conexo? " << graph->isConnected() << endl;
+
 
             break;
         }
