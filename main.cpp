@@ -373,17 +373,28 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             Graph* kruskalRestritivo = graph->kruskalRestritivo(grauRestricao);
        }
        case 18:{
-            int grauRestritivo;
-            int numeroIteracoes;
+            // int grauRestritivo;
+            // int numeroIteracoes;
 
-            cout << "Deseja restringir a que grau? " << endl;
-            cin >> grauRestritivo;
+            // cout << "Deseja restringir a que grau? " << endl;
+            // cin >> grauRestritivo;
 
-            cout << "Quantas iteracoes deseja?" << endl;
-            cin >> numeroIteracoes;
+            // cout << "Quantas iteracoes deseja?" << endl;
+            // cin >> numeroIteracoes;
 
-            Graph* kruskalRes = graph->kruskalIndiaAleatorioRestritivo(grauRestritivo, numeroIteracoes);
-            // kruskalRes->print();
+
+            Graph* kruskalRes = graph->kruskalIndiaRestritivo(3);
+            kruskalRes = graph->kruskalIndiaAleatorioRestritivo(3, 10, 0.5);
+            kruskalRes = graph->kruskalIndiaAleatorioRestritivo(3, 10, 0.3);
+            kruskalRes = graph->kruskalIndiaAleatorioRestritivo(3, 10, 0.15);
+            kruskalRes = graph->kruskalIndiaAleatorioRestritivo(3, 10, 0.1);
+            kruskalRes = graph->kruskalIndiaAleatorioRestritivo(3, 10, 0.05);
+            kruskalRes = graph->kruskalIndiaAleatorioRestritivo(3, 10, 0.01);
+            // // kruskalRes->print();
+
+
+
+
             break;
 
        }
@@ -431,10 +442,10 @@ Graph* leituraEUC_2D(ifstream& input_file, int directed, int weightedEdge, int w
     while(input_file >> n >> x >> y ){
         valores.push_back(std::pair<int,int>(x, y));
     }
-    for(auto valor : valores){
-        cout << valor.first << ", " << valor.second << endl;
-    }
-    cout << valores.size() << endl;
+    // for(auto valor : valores){
+    //     cout << valor.first << ", " << valor.second << endl;
+    // }
+    //cout << valores.size() << endl;
     Graph* graph = new Graph(valores.size(), directed, weightedEdge, weightedNode);
     for(int i = 0; i < valores.size(); i++){
         for(int j = i+1; j < valores.size(); j++){
@@ -446,8 +457,8 @@ Graph* leituraEUC_2D(ifstream& input_file, int directed, int weightedEdge, int w
             graph->insertEdge(i, j, (float)round(hypot(x1 - x2, y1 - y2)));
         }
     }
-    cout << graph->getNumberEdges() << endl;
-    graph->print();
+    //cout << graph->getNumberEdges() << endl;
+    //graph->print();
     return graph;
 }
 
@@ -484,8 +495,8 @@ int main(int argc, char const *argv[]) {
 
     if(input_file.is_open()){
 
-        graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
-        // graph = leituraEUC_2D(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        //graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        graph = leituraEUC_2D(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
     }else
         cout << "Unable to open " << argv[1];
 

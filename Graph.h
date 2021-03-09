@@ -70,8 +70,8 @@ class Graph{
         Graph* kruskal2();
         Graph* kruskal3(int grauRestricao);
         Graph* kruskalIndiaRestritivo(int grauRestricao);
-        Graph* kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration);
-        void auxKruskalIndiaAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes);
+        Graph* kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration, float alpha);
+        void auxKruskalIndiaAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, float alpha, double* sumWeight, float* sumTET, int *contNViaveis);
 
         //methods phase1
         float greed();

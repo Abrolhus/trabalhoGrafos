@@ -1811,6 +1811,8 @@ int Graph::getFatherOf(int node, int root){
 }
 
 Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
+
+    cout << "--------- INICIO GULOSO NAO-ALEATORIO RESTRITIVO d = " << grauRestricao  << " - GRAFO " << this->getOrder() << " ---------" << endl;
     auto begin = std::chrono::high_resolution_clock::now();
     DisjointSetForest forest(this->getOrder());
     // // [ -1, -1, -1, ..., -1]
@@ -1836,7 +1838,7 @@ Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
     EdgeInfo *edgeSolution = new EdgeInfo[listSize];
     int solutionSize = 0;
     Node *p = nullptr;
-    int weight = 0;
+    double weight = 0;
     int i;
     for(i =0; i < listSize; i++){
         edge = graphEdges[i];
@@ -1844,11 +1846,11 @@ Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
         sourceParent = forest.find(edge.getNodeIdSource()); // -1
         targetParent = forest.find(edge.getNodeIdTarget()); // -1
         if(sourceParent == -1 || targetParent == -1){
-            cout << "out of bounds!!!" << endl;
+            //cout << "out of bounds!!!" << endl;
             return aux;
         }
         if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
-            cout << "error" << endl;
+            //cout << "error" << endl;
             return aux;
         }
         if(aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() >= grauRestricao
@@ -1892,33 +1894,47 @@ Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
 
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    cout << "\n\n\nduracao: " << (elapsed.count() * 1e-9)<< endl;
-    cout << "peso: " << weight << endl;
-    // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
-    // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
-    aux->print();
-    // q = 33;
-    auto sonsOfQ = aux->getSonsOf(33, 25);
-    cout << "filhos do 34:" << endl;
-    for(int i= 0; i < sonsOfQ.size(); i++){
-        cout << i+1 << ": " << (int)sonsOfQ.at(i) << ", ";
+
+    if (!aux->isConnected())
+    {
+        cout << "Solucao nao eh viavel." << endl;
+        return aux;
     }
+
+    cout << "Solucao viavel!" << endl;
+    cout << "Solucao: " << weight << endl;
+    cout << "Tempo de execucao: " << (elapsed.count() * 1e-9)<< endl;
+    cout << endl << endl;
+    
+    // // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
+    // // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
+    // aux->print();
+    // // q = 33;
+    // auto sonsOfQ = aux->getSonsOf(33, 25);
+    // cout << "filhos do 34:" << endl;
+    // for(int i= 0; i < sonsOfQ.size(); i++){
+    //     cout << i+1 << ": " << (int)sonsOfQ.at(i) << ", ";
+    // }
     return aux;
 
 
 }
-Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration){
+Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration, float alpha){
     // INICIO DO CODIGO SOLTA O RELOGIO
-    double sum = 0;
-    double add = 1;
-    auto begin = std::chrono::high_resolution_clock::now();
-	int bestCost = INT_MAX;
+    //double sum = 0;
+    //double add = 1;
+    //auto begin = std::chrono::high_resolution_clock::now();
+    cout << "--------- INICIO GULOSO ALEATORIO RESTRITIVO d = " << grauRestricao  << " - GRAFO " << this->getOrder() << " PARA ALPHA " << alpha << " ---------" << endl;
+	double bestCost = 999999999999;
+    double sumWeight = 0;
+    float sumTET = 0;
+    int contNViaveis = 0;
 	Graph *optimalGraph = nullptr;
     DisjointSetForest forest(this->getOrder());
     // // [ -1, -1, -1, ..., -1]
     // bool solution = false;
     //int solucaoRestritivo = kruskalIndiaRestritivo(grauRestricao);
-    int solucaoRestritivo = 777;
+    //int solucaoRestritivo = 777;
     int sourceParent, targetParent;
     EdgeInfo edge;
     auto graphEdges = vector<EdgeInfo>(this->getNumberEdges());
@@ -1933,34 +1949,44 @@ Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberItera
     int listSize = this->listSortEdges(isVisited, graphEdges); //O(e*v)
     //cria um grafo auxiliar que introduz as arestas mais baratas e testa uma a uma no novo grafo que contem todos os nós do grafo original
     //se o grafo se tornou ciclo ou não
-    cout << "listSize: " << listSize << endl;
-    cout << "graphEdgesSize: " << graphEdges.size() << endl;
-    int contador = 0;
+    //cout << "listSize: " << listSize << endl;
+    //cout << "graphEdgesSize: " << graphEdges.size() << endl;
+    //int contador = 0;
 
     for(int i = 0; i < numberIteration; i++){
-    	cout << "i: " << i << " ";
-    	this->auxKruskalIndiaAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize, &contador, solucaoRestritivo);
+    	//cout << "i: " << i << " ";
+    	this->auxKruskalIndiaAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize, alpha, &sumWeight, &sumTET, &contNViaveis);
     }
-
-    cout << "Melhor custo de AGM: " << bestCost << endl;
+    cout << "Numero de iteracoes: " << numberIteration << endl;
+    cout << "Numero de solucoes nao viaveis: " << contNViaveis << endl;
+    cout << "Porcentagem de solucoes nao viaveis: " << (contNViaveis/numberIteration) * 100 << "%" << endl;
+    cout << "Melhor solucao: " << bestCost << endl;
+    cout << "Media das solucoes: " << sumWeight/(numberIteration - contNViaveis) << endl;
+    cout << "Media de tempo das execucoes: " << sumTET/(numberIteration - contNViaveis) << endl;
+    cout << "------------------------------------- FIM --------------------------------- " << endl;
+    cout << endl << endl;
     // cout << "Solucao do Kruskal Restritivo: " << solucaoRestritivo << endl;
-    cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " <<
-                    (double)contador/numberIteration*100 << "% do total de iteracoes" << endl;
+    //cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " <<
+                    //(double)contador/numberIteration*100 << "% do total de iteracoes" << endl;
 
 
-    // INICIO DO CODIGO PAUSA O RELOGIO
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
 
-    //cout << "Result: " << sum << endl;
+    // // INICIO DO CODIGO PAUSA O RELOGIO
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
 
-    cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
-    // FIM
+    // //cout << "Result: " << sum << endl;
+
+    // cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
+    // // FIM
 
 
     return optimalGraph;
 }
-void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, int* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, int* contador, int solKrusRes){
+void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, float alpha, double* sumWeight, float* sumTET, int *contNViaveis){
+    //STARTA CLOCK
+    auto begin = std::chrono::high_resolution_clock::now();
+
     Graph *aux = new Graph(this->getOrder(), this->getDirected(), this->getWeightedEdge(), this->getWeightedNode());
     EdgeInfo *edgeSolution = new EdgeInfo[listSize];
     DisjointSetForest forest(this->getOrder());
@@ -1968,7 +1994,6 @@ void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, int* bestCost,
     Node *p = nullptr;
     EdgeInfo edge;
     int weight = 0;
-    float alpha = 0.01f;
     int sourceParent, targetParent;
     int i;
     for(i =0; i < listSize; i++){
@@ -1982,11 +2007,11 @@ void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, int* bestCost,
         sourceParent = forest.find(edge.getNodeIdSource()); // -1
         targetParent = forest.find(edge.getNodeIdTarget()); // -1
         if(sourceParent == -1 || targetParent == -1){
-            cout << "out of bounds!!!" << endl;
+            //cout << "out of bounds!!!" << endl;
             return ;
         }
         if(sourceParent >= this->getOrder() || targetParent >= this->getOrder()){
-            cout << "error" << endl;
+            //cout << "error" << endl;
             return ;
         }
         if(aux->getNode(graphEdges[i].getNodeIdSource())->getDegree() >= grauRestricao
@@ -2009,27 +2034,38 @@ void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, int* bestCost,
 
     }
     if(!aux->isConnected()){
-        cout << "solucao nao viavel";
+        //cout << "solucao nao viavel";
+        *contNViaveis++;
         return;
     }
-    cout << "peso: " << weight;
+    //cout << "peso: " << weight;
+    *sumWeight += weight;
 
-    if (weight < solKrusRes)
-    {
-        *contador = *contador + 1;
-        cout << " - melhor que KrusRes!";
-    }
+    // if (weight < solKrusRes)
+    // {
+    //     *contador = *contador + 1;
+    //     cout << " - melhor que KrusRes!";
+    // }
 
     if (weight < *bestCost)
     {
     	*bestCost = weight;
     	*optimalGraph = aux;
-        if (*bestCost < solKrusRes)
-        {
-            cout << " - nova melhor solucao!!";
-        }
+        // if (*bestCost < solKrusRes)
+        // {
+        //     cout << " - nova melhor solucao!!";
+        // }
     }
 
-    cout << endl;
+    //cout << endl;
+    // INICIO DO CODIGO PAUSA O RELOGIO
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    *sumTET += elapsed.count() * 1e-9;
+
+    //cout << "Result: " << sum << endl;
+
+    //cout << "Time measured: " << (elapsed.count() * 1e-9) << " seconds" << endl;
+    // FIM
     return;
 }
