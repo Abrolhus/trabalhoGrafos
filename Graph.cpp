@@ -1810,9 +1810,9 @@ int Graph::getFatherOf(int node, int root){
     return -1;
 }
 
-Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
+Graph* Graph::kruskalIndiaRestritivo(int grauRestricao, ofstream& output_file){
 
-    cout << "--------- INICIO GULOSO NAO-ALEATORIO RESTRITIVO d = " << grauRestricao  << " - GRAFO " << this->getOrder() << " ---------" << endl;
+    output_file << "--------- INICIO GULOSO NAO-ALEATORIO RESTRITIVO d = " << grauRestricao  << " - GRAFO " << this->getOrder() << " ---------" << endl;
     auto begin = std::chrono::high_resolution_clock::now();
     DisjointSetForest forest(this->getOrder());
     // // [ -1, -1, -1, ..., -1]
@@ -1897,14 +1897,14 @@ Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
 
     if (!aux->isConnected())
     {
-        cout << "Solucao nao eh viavel." << endl;
+        output_file << "Solucao nao eh viavel." << endl;
         return aux;
     }
 
-    cout << "Solucao viavel!" << endl;
-    cout << "Solucao: " << weight << endl;
-    cout << "Tempo de execucao: " << (elapsed.count() * 1e-9)<< endl;
-    cout << endl << endl;
+    output_file << "Solucao viavel!" << endl;
+    output_file << "Solucao: " << weight << endl;
+    output_file << "Tempo de execucao: " << (elapsed.count() * 1e-9)<< endl;
+    output_file << endl << endl;
     
     // // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
     // // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
@@ -1919,12 +1919,12 @@ Graph* Graph::kruskalIndiaRestritivo(int grauRestricao){
 
 
 }
-Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration, float alpha){
+Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberIteration, float alpha, ofstream& output_file){
     // INICIO DO CODIGO SOLTA O RELOGIO
     //double sum = 0;
     //double add = 1;
     //auto begin = std::chrono::high_resolution_clock::now();
-    cout << "--------- INICIO GULOSO ALEATORIO RESTRITIVO d = " << grauRestricao  << " - GRAFO " << this->getOrder() << " PARA ALPHA " << alpha << " ---------" << endl;
+    output_file << "--------- INICIO GULOSO ALEATORIO RESTRITIVO d = " << grauRestricao  << " - GRAFO " << this->getOrder() << " PARA ALPHA " << alpha << " ---------" << endl;
 	double bestCost = 999999999999;
     double sumWeight = 0;
     float sumTET = 0;
@@ -1955,16 +1955,16 @@ Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberItera
 
     for(int i = 0; i < numberIteration; i++){
     	//cout << "i: " << i << " ";
-    	this->auxKruskalIndiaAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize, alpha, &sumWeight, &sumTET, &contNViaveis);
+    	this->auxKruskalIndiaAleatorioRestritivo(grauRestricao, &bestCost, &optimalGraph, graphEdges, listSize, alpha, &sumWeight, &sumTET, &contNViaveis, output_file);
     }
-    cout << "Numero de iteracoes: " << numberIteration << endl;
-    cout << "Numero de solucoes nao viaveis: " << contNViaveis << endl;
-    cout << "Porcentagem de solucoes nao viaveis: " << (contNViaveis/numberIteration) * 100 << "%" << endl;
-    cout << "Melhor solucao: " << bestCost << endl;
-    cout << "Media das solucoes: " << sumWeight/(numberIteration - contNViaveis) << endl;
-    cout << "Media de tempo das execucoes: " << sumTET/(numberIteration - contNViaveis) << endl;
-    cout << "------------------------------------- FIM --------------------------------- " << endl;
-    cout << endl << endl;
+    output_file << "Numero de iteracoes: " << numberIteration << endl;
+    output_file << "Numero de solucoes nao viaveis: " << contNViaveis << endl;
+    output_file << "Porcentagem de solucoes nao viaveis: " << (contNViaveis/numberIteration) * 100 << "%" << endl;
+    output_file << "Melhor solucao: " << bestCost << endl;
+    output_file << "Media das solucoes: " << sumWeight/(numberIteration - contNViaveis) << endl;
+    output_file << "Media de tempo das execucoes: " << sumTET/(numberIteration - contNViaveis) << endl;
+    output_file << "------------------------------------- FIM --------------------------------- " << endl;
+    output_file << endl << endl;
     // cout << "Solucao do Kruskal Restritivo: " << solucaoRestritivo << endl;
     //cout << contador << " iteracoes foram melhores que Kruskal Restritivo, representando " <<
                     //(double)contador/numberIteration*100 << "% do total de iteracoes" << endl;
@@ -1983,7 +1983,7 @@ Graph* Graph::kruskalIndiaAleatorioRestritivo(int grauRestricao, int numberItera
 
     return optimalGraph;
 }
-void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, float alpha, double* sumWeight, float* sumTET, int *contNViaveis){
+void Graph::auxKruskalIndiaAleatorioRestritivo(int grauRestricao, double* bestCost, Graph** optimalGraph, vector<EdgeInfo> graphEdges, int listSize, float alpha, double* sumWeight, float* sumTET, int *contNViaveis, ofstream& output_file){
     //STARTA CLOCK
     auto begin = std::chrono::high_resolution_clock::now();
 
