@@ -1,6 +1,6 @@
 #ifndef EDGEINFO_H_INCLUDED
 #define EDGEINFO_H_INCLUDED
-#define MAX 10000;
+#define MAX 1000000;
 
 class EdgeInfo
 {
@@ -9,7 +9,7 @@ public:
 	EdgeInfo() { nodeIdSource = MAX
 				 nodeIdTarget = MAX
 				 edgeWeight = MAX; };
-	EdgeInfo(int source, int target, int weight){
+	EdgeInfo(int source, int target, float weight){
 		nodeIdSource = source;
 		nodeIdTarget = target;
 		edgeWeight = weight;
@@ -19,17 +19,17 @@ public:
 	//getters
 	int getNodeIdSource() { return nodeIdSource; };
 	int getNodeIdTarget() { return nodeIdTarget; };
-	int getEdgeWeight() { return edgeWeight; };
+	float getEdgeWeight() { return edgeWeight; };
 
 	//setters
 	void setNodeIdSource(int id) { nodeIdSource = id; };
 	void setNodeIdTarget(int id) { nodeIdTarget = id; };
-	void setEdgeWeight(int weight) { edgeWeight = weight; };
+	void setEdgeWeight(float weight) { edgeWeight = weight; };
 
 private:
     int nodeIdSource;
     int nodeIdTarget;
-    int edgeWeight;
+    float edgeWeight;
 };
 
 #endif

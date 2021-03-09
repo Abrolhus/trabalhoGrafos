@@ -12,7 +12,7 @@
 #include <map>
 #include <vector>
 
-#define INF 10000.0f
+#define INF 1000000.0f
 
 using namespace std;
 
@@ -92,6 +92,7 @@ class Graph{
         bool auxIsCyclicDirected(int nodeId, bool isVisited[], bool *isContainedRecusirve);
         bool isCyclicUtil();
         vector<bool> getSonsOf(int father, int idFirstNode);
+        int getFatherOf(int node, int root);
 
 
 
