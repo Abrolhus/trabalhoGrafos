@@ -23,7 +23,7 @@
 #include <climits>
 #include <chrono>
 #include "DisjointSetForest.h"
-#define INFINITO 999999;
+#define INFINITO 9999;
 
 using namespace std;
 
@@ -1200,8 +1200,8 @@ void Graph::auxKruskalAleatorioRestritivo(int grauRestricao, double* bestCost, G
     EdgeInfo *edgeSolution = new EdgeInfo[listSize];
     int solutionSize = 0;
     Node *p = nullptr;
-    float alpha = 0.001f;
-    double weight = 0;
+    float alpha = 0.01;
+    int weight = 0;
 
     //cout << "nums: " << endl;
     for (int i = 0; i < listSize; i++)
@@ -1755,91 +1755,36 @@ cout << "Grafo input é conexo? " << this->isConnected() << endl;
         cout << "Vertice tratado: " << verticeEstourado->getId() << " GRAU: " << verticeEstourado->getDegree() << endl;
         Edge* edge = verticeEstourado->getFirstEdge();
         Edge* nextEdge;
-        int pai = aux->getFatherOf(verticeEstourado->getId(), 25);
-        cout << pai << endl;
-        if(pai == -1){
-            continue;
-        }
         while(edge != nullptr && verticeEstourado->getDegree() > grauRestricao){
             nextEdge = edge->getNextEdge();
-            // cout << "nextEdge:" << verticeEstourado->getId() << "-> "<<  nextEdge->getTargetId() << endl;
-            // cout << edge->getTargetId() << endl;
-            if(edge->getTargetId() == pai){
-                std::cout << "pai" << endl;
+            cout << "nextEdge:" << nextEdge->getTargetId() << endl;
+            cout << edge->getTargetId() << endl;
+            if(edge->getTargetId() == verticeEstourado->getId()){
+                std::cout << "igual" << endl;
                 edge = edge->getNextEdge();
                 continue;
             }
-            int targetId = edge->getTargetId();
-            if(aux->getNode(targetId)->getDegree() <= 1){
-                edge = edge->getNextEdge();
-                continue;
-            }
-            cout << "sons: ..." << endl;
-            vector<bool> isSonOfTarget = aux->getSonsOf(edge->getTargetId(), 25);  // TODO: tira esse 25
-//            if(isSonOfTarget.at(verticeEstourado->getId()){
-                    cout << "uai!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-            // cout << "tamanho: " << isSonOfTarget.size() << endl;
-            cout << "sons done" << endl;
-            for (auto it = remainingEdges.begin(); it != remainingEdges.end(); it++){
-                int source= it->getNodeIdSource();
-                int target = it->getNodeIdTarget();
-                int weight = it->getEdgeWeight();
-                // cout << source << "->" << target << endl;
-                if (isSonOfTarget.at(source) != isSonOfTarget.at(target)) {
-                    if(aux->getNode(source)->getDegree() < grauRestricao &&
-                    aux->getNode(target)->getDegree() < grauRestricao &&
-                    aux->getNode(source)->getDegree() > 1 &&
-                    aux->getNode(target)->getDegree() > 1 ){
-
-                        cout << "source degree: " << aux->getNode(source)->getDegree();
-                        cout << "target degree: " << aux->getNode(target)->getDegree();
-                        // if a aresta sai ou entra na subarvore de 'target'
-                        // e nao viola outros graus
-                        cout << "inserindo: " << it->getNodeIdSource()<< "->" << it->getNodeIdTarget()<< " (" << it->getEdgeWeight() << endl;
-                        aux->insertEdge(source, target, weight);
-                        // cout << nextEdge->getTargetId() << endl;
-                        verticeEstourado->removeEdge(targetId, aux->getDirected(), aux->getNode(targetId));
-                        cout << "removendo: " << targetId << "-> " << verticeEstourado->getId() << "()" << endl;
-                        aux->getNode(targetId)->removeEdge(verticeEstourado->getId(), aux->getDirected(), verticeEstourado);
-                        cout << "removed" << endl;
-                        remainingEdges.erase(it);
-                        cout << "erased" << endl;
-                        break;
-                    }
+            vector<bool> isSonOfTarget = this->getSonsOf(edge->getTargetId(), 25);  // TODO: tira esse 25
+            for (auto it = remainingEdges.begin(); it < remainingEdges.end(); it++){
+                if (isSonOfTarget.at(it->getNodeIdSource()) != isSonOfTarget.at(it->getNodeIdTarget())) {
+                    // if a aresta sai ou entra na subarvore de 'target'
+                    aux->insertEdge(it->getNodeIdSource(), it->getNodeIdTarget(), it->getEdgeWeight());
+                    cout << "inserindo: " << it->getNodeIdSource()<< "->" << it->getNodeIdTarget()<< " (" << it->getEdgeWeight() << endl;
+                    int targetId = edge->getTargetId();
+                    cout << nextEdge->getTargetId() << endl;
+                    verticeEstourado->removeEdge(targetId, aux->getDirected(), aux->getNode(edge->getTargetId()));
+                    cout << "removendo: " << targetId << "-> " << verticeEstourado->getId() << "()" << endl;
+                    aux->getNode(targetId)->removeEdge(verticeEstourado->getId(), aux->getDirected(), verticeEstourado);
+                    cout << "removed" << endl;
+                    remainingEdges.erase(it);
+                    cout << "erased" << endl;
+                    break;
                 }
             }
-            // cout << nextEdge->getTargetId()<< endl;
+            cout << nextEdge->getTargetId()<< endl;
             edge = nextEdge;
         }
     }
-    cout << "Eh conexo? (tem que ser) " << aux->isConnected() << endl;
-    // cout << endl << "Peso:  : " << weight << endl;
     return aux;
-}
-
-int Graph::getFatherOf(int node, int root){
-    vector<bool> wasVisited(this->getOrder(), 0); // O(n)
-    std::queue<Node*> fila;
-    Node* pai;
-
-    fila.push(this->getNode(root));
-    wasVisited.at(root) = true;
-    int father;
-    while(!fila.empty()){
-        auto *edge = fila.front()->getFirstEdge();
-        while(edge != nullptr){
-            auto targetId = edge->getTargetId();
-            if(!wasVisited.at(targetId)){
-                wasVisited.at(targetId) = true;
-                fila.push(this->getNode(targetId));
-                if(targetId == node){
-                    return fila.front()->getId();
-                }
-            }
-            edge = edge->getNextEdge();
-        }
-        fila.pop();
-    }
-    return -1;
 }
 

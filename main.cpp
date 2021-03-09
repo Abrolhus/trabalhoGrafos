@@ -1,5 +1,3 @@
-#include <algorithm>
-#include <math.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -406,37 +404,6 @@ int mainMenu(ofstream& output_file, Graph* graph){
     return 0;
 }
 
-Graph* leituraEUC_2D(ifstream& input_file, int directed, int weightedEdge, int weightedNode){
-    // int n = std::count(std::istreambuf_iterator<char>(input_file),
-                 // std::istreambuf_iterator<char>(), '\n');
-    // cout << "num de linhas: " <<  n << endl;;
-    int n, x, y;
-    std::vector<std::pair<int, int>> valores;
-    string line;
-    for(int i = 0; i<6; i++)
-        std::getline(input_file, line);
-    while(input_file >> n >> x >> y ){
-        valores.push_back(std::pair<int,int>(x, y));
-    }
-    for(auto valor : valores){
-        cout << valor.first << ", " << valor.second << endl;
-    }
-    cout << valores.size() << endl;
-    Graph* graph = new Graph(valores.size(), directed, weightedEdge, weightedNode);
-    for(int i = 0; i < valores.size(); i++){
-        for(int j = i+1; j < valores.size(); j++){
-            double x1 = valores.at(i).first;
-            double x2 = valores.at(j).first;
-            double y1 = valores.at(i).second;
-            double y2 = valores.at(j).second;
-            // cout << sqrt(hypot(x1 - x2, y1 - y2));
-            graph->insertEdge(i, j, (float)round(hypot(x1 - x2, y1 - y2)));
-        }
-    }
-    cout << graph->getNumberEdges() << endl;
-    graph->print();
-    return graph;
-}
 
 
 int main(int argc, char const *argv[]) {
@@ -471,8 +438,8 @@ int main(int argc, char const *argv[]) {
 
     if(input_file.is_open()){
 
-        //graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
-        graph = leituraEUC_2D(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+        graph = leitura(input_file, atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+
     }else
         cout << "Unable to open " << argv[1];
 
@@ -524,3 +491,4 @@ int main(int argc, char const *argv[]) {
 
     return 0;
 }
+

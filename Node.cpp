@@ -176,7 +176,7 @@ int Node::removeEdge(int id, bool directed, Node* target_node){
         if(aux->getNextEdge() == this->last_edge)
             this->last_edge = aux->getNextEdge();
 
-        // delete aux;
+        delete aux;
         //Verifies whether the graph is directed
         if(directed)
             this->decrementOutDegree();
