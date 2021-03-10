@@ -43,7 +43,7 @@ Graph* leitura(ifstream& input_file, int directed, int weightedEdge, int weighte
 
         while(input_file >> idNodeSource >> idNodeTarget) {
 
-            cout << "Inserindo aresta: " << idNodeSource << "->" << idNodeTarget << endl;
+            //cout << "Inserindo aresta: " << idNodeSource << "->" << idNodeTarget << endl;
             graph->insertEdgePreguicoso(idNodeSource, idNodeTarget, 0);
 
         }
