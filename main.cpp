@@ -201,9 +201,8 @@ int menu(){
     cout << "[5] Árvore Geradora Mínima de Kruskal" << endl;
     cout << "[6] Imprimir caminhamento em largura" << endl;
     cout << "[7] Imprimir ordenacao topológica" << endl;
-    cout << "[8] Algoritmo Guloso" << endl;
-    cout << "[9] Algoritmo Guloso Randomizado" << endl;
-    cout << "[10] Conexidade" << endl;
+    cout << "[8] Algoritmo Guloso com restricao de grau" << endl;
+    cout << "[9] Algoritmo Guloso Randomizado com restricao de grau" << endl;
     cout << "[0] Sair" << endl;
 
     cin >> selecao;
@@ -254,7 +253,8 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             cout << endl;
             Graph* novoGrafo = graph->getVertexInduced(nosLista);
-            novoGrafo->print();
+
+            novoGrafo->escreverEmArquivo(output_file);
 
             break;
         }
@@ -317,6 +317,8 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             Graph* prim = graph->prim();
 
+            prim->escreverEmArquivo(output_file);
+
             break;
 
         }
@@ -326,6 +328,8 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cout << "AGM usando algoritimo de Kruskal selecionado" << endl << endl;
 
             Graph* kruskalComum = graph->kruskal2();
+
+            kruskalComum->escreverEmArquivo(output_file);
 
             break;
         }
@@ -394,6 +398,8 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
             cout << "Resultado: " << endl << endl;
             Graph *gulosoRes = graph->algoritmoGulosoRestritivo(grauRes);
 
+            gulosoRes->escreverEmArquivo(output_file);
+
             break;
         }
         case 9:{
@@ -420,6 +426,8 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             cout << "Resultado: " << endl << endl;
             Graph *gulosoResAle = graph->algoritmoGulosoAleatorioRestritivo(grauRestricao, numeroIteracoes, alpha);
+
+            gulosoResAle->escreverEmArquivo(output_file);
 
             break;
         }

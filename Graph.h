@@ -80,6 +80,8 @@ class Graph{
         float greed();
         void escreverEmArquivo(ofstream& output_file);
         void escreverEmArquivoTeste(ofstream& output_file);
+        void escreveArquivoDirecionado(ofstream& output_file);
+        void escreveArquivoNaoDirecionado(ofstream& output_file);
         float greedRandom();
         float greedRactiveRandom();
         void print();

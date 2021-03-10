@@ -1477,43 +1477,154 @@ void Graph::print(){
     return;
 
 }
-void Graph::escreverEmArquivo(ofstream& output_file){
+void Graph::escreveArquivoNaoDirecionado(ofstream& output_file){
 
-    output_file << this->getOrder() << endl;
-    Node* p = this->first_node;
-    while(p != nullptr){
-        output_file << p->getId() +1 << ": ";
-        Edge* e = p->getFirstEdge();
-        while(e != nullptr){
-            output_file << p->getId() + 1<< "->" << e->getTargetId() +1 << ", " ;
+    output_file << "strict graph GrafoOrdem" << this->getOrder() << " {" << endl;
+    Node *p = this->getFirstNode();
+    Edge *e = nullptr;
+
+    while (p != nullptr)
+    {
+        e = p->getFirstEdge();
+
+        while (e != nullptr)
+        {
+            if (this->getWeightedEdge())
+            {
+                output_file << p->getId() << " -- " << e->getTargetId() << " [label=\"" << e->getWeight() << "\"]" << endl;
+            }
+            else
+            {
+                output_file << p->getId() << " -- " << e->getTargetId() << endl;
+            }
+
             e = e->getNextEdge();
         }
-        output_file << endl;
+
         p = p->getNextNode();
     }
+    output_file << "}";
+
+    // output_file << this->getOrder() << endl;
+    // Node* p = this->first_node;
+    // while(p != nullptr){
+    //     output_file << p->getId() +1 << ": ";
+    //     Edge* e = p->getFirstEdge();
+    //     while(e != nullptr){
+    //         output_file << p->getId() + 1<< "->" << e->getTargetId() +1 << ", " ;
+    //         e = e->getNextEdge();
+    //     }
+    //     output_file << endl;
+    //     p = p->getNextNode();
+    // }
 
 
 
     return;
 }
 
-void Graph::escreverEmArquivoTeste(ofstream& output_file){
+void Graph::escreveArquivoDirecionado(ofstream& output_file){
 
-    output_file << "graph GrafoOrdem" << this->getOrder() << " {" << endl;
+    output_file << "digraph GrafoOrdem" << this->getOrder() << " {" << endl;
     Node *p = this->getFirstNode();
+    Edge *e = nullptr;
+
     while (p != nullptr)
     {
-        output_file << p->getId();
-        Edge* e = p->getFirstEdge();
+        e = p->getFirstEdge();
+
         while (e != nullptr)
         {
-            output_file << " -- " << e->getTargetId();
+            if (this->getWeightedEdge())
+            {
+                output_file << p->getId() << " -> " << e->getTargetId() << " [label=\"" << e->getWeight() << "\"]" << endl;
+            }
+            else
+            {
+                output_file << p->getId() << " -> " << e->getTargetId() << endl;
+            }
+
             e = e->getNextEdge();
         }
-        output_file << endl;
+
         p = p->getNextNode();
     }
-    output_file << endl;
+    output_file << "}";
+
+    return;
+}
+
+void Graph::escreverEmArquivo(ofstream& output_file)
+{
+    if(this->getDirected())
+    {
+        this->escreveArquivoDirecionado(output_file);
+    }
+    else
+    {
+        this->escreveArquivoNaoDirecionado(output_file);
+    }
+
+}
+
+void Graph::escreverEmArquivoTeste(ofstream& output_file){
+
+    Node *p = first_node;
+    Edge *e = p->getFirstEdge();
+    int i = 0;
+    int visNode = 0;
+    int isVisited[this->getOrder()];
+
+    EdgeInfo arestaGrafo[this->getNumberEdges()];
+
+    int arestaGrafoSize;
+
+    for (int i = 0; i < this->getOrder(); i++)
+    {
+        isVisited[i] = -1;
+    }
+
+
+    //adiciona todas as arestas do grafo no TAD EdgeInfo
+    while (p != nullptr)
+    {
+        //adiciona nós ja visitados para evitar de inserir arestas duas vezes no caso de grafos nao orientados
+        isVisited[visNode] = p->getId();
+        e = p->getFirstEdge();
+
+        while (e != nullptr)
+        {
+            //se orientado, somente adiciona aresta
+            if(this->getDirected())
+            {
+                arestaGrafo[i].setNodeIdSource(p->getId());
+                arestaGrafo[i].setNodeIdTarget(e->getTargetId());
+                arestaGrafo[i].setEdgeWeight(e->getWeight());
+                i++;
+            }
+            //checha se o no ja foi target ja foi visitado para nao inserir a aresta de volta em casos de grafos nao orientaos
+            else if (!checkContainsId(e->getTargetId(), isVisited, this->getOrder()))
+            {
+                arestaGrafo[i].setNodeIdSource(p->getId());
+                arestaGrafo[i].setNodeIdTarget(e->getTargetId());
+                arestaGrafo[i].setEdgeWeight(e->getWeight());
+                i++;
+            }
+
+            e = e->getNextEdge();
+        }
+
+        visNode++;
+        p = p->getNextNode();
+    }
+
+    arestaGrafoSize = i;
+
+    output_file << "graph GrafoOrdem" << this->getOrder() << " {" << endl;
+    for (int k = 0; k < arestaGrafoSize; k++)
+    {
+        output_file << arestaGrafo[k].getNodeIdSource() << " -- " << arestaGrafo[k].getNodeIdTarget() << endl;
+    }
     output_file << "}";
 
 
