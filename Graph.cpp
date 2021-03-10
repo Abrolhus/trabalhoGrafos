@@ -607,7 +607,6 @@ float Graph::dijkstra(int idSource, int idFinal){
 
     if (idSource >= this->getOrder() || idFinal >= this->getOrder())
     {
-        cout << "Nao foi possivel calcular distancia. Vertices inexistentes!" << endl;
         return 0;
     }
 
@@ -624,7 +623,6 @@ float Graph::dijkstra(int idSource, int idFinal){
         unvisitedNodes.push(&allNodes.at(p->getId()));
     }
     for(auto& item : allNodes){
-        cout << item.first << ":" << item.second.wasVisited<< ", "<< item.second.pathCost << endl;
     }
 
     // auto currentNode = sourceNode;
@@ -648,16 +646,13 @@ float Graph::dijkstra(int idSource, int idFinal){
                 //cout << " _novoCusto:" << nodeInfo->pathCost << ", "<< endl;
             }
         }
-        cout << endl;
         allNodes.at(currentNode->getId()).wasVisited = true;
         unvisitedNodes.pop();
         currentNodeInfo = (unvisitedNodes.top());
         if(currentNode == this->getNode(idFinal)){
-            cout << currentNode->getId() +1<< "<-";
 
             NodeDist* p = currentNodeInfo;
             while(p != firstNodeInfo){
-                cout << p->previousId +1 << "<-";
                 p = &allNodes.at(p->previousId);
             }
 
@@ -2061,7 +2056,7 @@ Graph* Graph::kruskalIndiaRestritivo(int grauRestricao, ofstream& output_file){
     output_file << "Solucao: " << weight << endl;
     output_file << "Tempo de execucao: " << (elapsed.count() * 1e-9)<< endl;
     output_file << endl << endl;
-    
+
     // // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
     // // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
     // aux->print();
@@ -2470,7 +2465,7 @@ Graph* Graph::algoritmoGulosoRestritivo(int grauRestricao){
     cout << "Solucao: " << weight << endl;
     cout << "Tempo de execucao: " << (elapsed.count() * 1e-9)<< endl;
     cout << endl;
-    
+
     // // cout << "maxEdgeWeight:" << *maxEdgeWeight << endl;
     // // cout << "minEdgeWeight:" << *minEdgeWeight << endl;
     // aux->print();

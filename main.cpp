@@ -274,7 +274,7 @@ void selecionar(int selecao, Graph* graph, ofstream& output_file){
 
             cout << endl;
 
-            cout << "Distancia entre" << vert1 << " e " << vert2 << " :" << graph->dijkstra(vert1, vert2) << endl;
+            cout << "Distancia entre " << vert1 << " e " << vert2 << ": " << graph->dijkstra(vert1, vert2) << endl;
 
             break;
         }
